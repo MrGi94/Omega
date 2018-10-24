@@ -1,10 +1,7 @@
 package Controller;
 
 import Controller.GUI.BoardController;
-import Model.Constants;
-import Model.GameData;
-import Model.Hexagon;
-import Model.UnionFindTile;
+import Model.*;
 
 import java.util.*;
 
@@ -12,8 +9,8 @@ public class MapController {
 
     public static void generateHexMap(int map_radius) {
         Random rand = new Random();
-        GameData.HEX_MAP = new HashMap<>();
-        GameData.UNION_FIND_MAP = new HashMap<>();
+        GameData.GAME_STATES = new Stack<>();
+        GameState gs = new GameState();
         GameData.TRANSPOSITION_TABLE = new HashMap<>();
         GameData.ZORBIST_WHITE_MOVE = rand.nextLong();
         map_radius--;
@@ -23,20 +20,22 @@ public class MapController {
             for (int r = r1; r <= r2; r++) {
                 Hexagon h = new Hexagon(q, r, -q - r);
                 UnionFindTile uft = new UnionFindTile(rand.nextLong(), rand.nextLong());
-                GameData.HEX_MAP.put(h, uft);
+                gs.HEX_MAP.put(h, uft);
             }
         }
-        GameData.FREE_TILES_LEFT = GameData.HEX_MAP.size();
+        gs.FREE_TILES_LEFT = (byte) gs.HEX_MAP.size();
+        GameData.GAME_STATES.add(gs);
     }
 
-    public static void putHexMapValue(Hexagon h, Byte color, Byte tile_id) {
-        if (GameData.HEX_MAP.containsKey(h)) {
-            UnionFindTile uft = GameData.HEX_MAP.get(h);
+    public static void putHexMapValue(Hexagon h, Byte color) {
+        if (GameLogicController.currentGameState.HEX_MAP.containsKey(h)) {
+            UnionFindTile uft = GameLogicController.currentGameState.HEX_MAP.get(h);
+            byte tile_id = GameLogicController.currentGameState.NUMBER_OF_TILES_PLACED;
             uft.setTileId(tile_id);
             uft.setParent(tile_id);
             uft.setColor(color);
-            GameData.HEX_MAP.put(h, uft);
-            GameData.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
+            GameLogicController.currentGameState.HEX_MAP.put(h, uft);
+            GameLogicController.currentGameState.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
             setUnionFindTile(uft);
             connectNeighbors(h, color, tile_id);
         }
@@ -47,7 +46,6 @@ public class MapController {
         ArrayList<Hexagon> valid_color_neighbors = new ArrayList<>();
         for (Hexagon entry : valid_neighbors) {
             if (getHexMapColor(entry).equals(color)) {
-                byte c = getHexMapColor(entry);
                 valid_color_neighbors.add(entry);
             }
         }
@@ -74,17 +72,17 @@ public class MapController {
     public static Byte getHexMapColor(Hexagon h) {
         if (h == null)
             return null;
-        return GameData.HEX_MAP.get(h).getColor();
+        return GameLogicController.currentGameState.HEX_MAP.get(h).getColor();
     }
 
     public static Set<Map.Entry<Hexagon, UnionFindTile>> getHexMapEntrySet() {
-        return GameData.HEX_MAP.entrySet();
+        return GameLogicController.currentGameState.HEX_MAP.entrySet();
     }
 
     public static UnionFindTile getHexMapValue(Hexagon h) {
         if (h == null)
             return null;
-        return GameData.HEX_MAP.get(h);
+        return GameLogicController.currentGameState.HEX_MAP.get(h);
     }
 
     public static ArrayList<Hexagon> getFreeTiles() {
@@ -96,7 +94,6 @@ public class MapController {
         }
         return free_tiles;
     }
-
 
     /* Union Find Map Control */
 
@@ -112,11 +109,11 @@ public class MapController {
     }
 
     public static UnionFindTile getUnionFindTile(byte tile_id) {
-        return GameData.UNION_FIND_MAP.get(tile_id);
+        return GameLogicController.currentGameState.UNION_FIND_MAP.get(tile_id);
     }
 
     public static void setUnionFindTile(UnionFindTile uft) {
-        GameData.UNION_FIND_MAP.put(uft.getTileId(), uft);
+        GameLogicController.currentGameState.UNION_FIND_MAP.put(uft.getTileId(), uft);
     }
 
     public static UnionFindTile find(byte tile_id) {
@@ -145,7 +142,7 @@ public class MapController {
         largeParent.setSize((byte) (smallParent.getSize() + largeParent.getSize()));
         setUnionFindTile(smallParent);
         setUnionFindTile(largeParent);
-        GameData.CLUSTER_PARENT_ID_LIST.remove(smallParent.getTileId());
+        GameLogicController.currentGameState.CLUSTER_PARENT_ID_LIST.remove(smallParent.getTileId());
     }
 
 

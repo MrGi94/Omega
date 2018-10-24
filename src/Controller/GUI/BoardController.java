@@ -25,13 +25,15 @@ public class BoardController extends MouseAdapter {
             y[i] = (int) Math.round(p.y);
             i = i + 1;
         }
-        Board board = Menu.board;
-        board.drawPolygon(board.getGraphics(), x, y, getColorByByte(b));
+        Menu.board.drawPolygon(Menu.board.getGraphics(), x, y, getColorByByte(b));
     }
 
     public static void generateBoard(boolean createNew) {
-        if (createNew)
+        if (createNew) {
             MapController.generateHexMap(GameData.BOARD_SIZE);
+        }
+        GameLogicController.getCurrentGameState();
+        Menu.board.removeAll();
         for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
             drawHexTile(entry.getKey(), entry.getValue().getColor());
         }
@@ -39,6 +41,7 @@ public class BoardController extends MouseAdapter {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        GameLogicController.getCurrentGameState();
         if (GameData.HUMAN_PLAYER_TURN) {
             Hexagon h = Layout.pixelToHex(new Point(e.getX(), e.getY() - 31)).hexRound();
             Byte b = determineNextMoveColor();
@@ -51,13 +54,13 @@ public class BoardController extends MouseAdapter {
     public static void placeOnFreeTile(Hexagon h, Byte b) {
         Byte val = MapController.getHexMapColor(h);
         if (val != null && val == 0) {
-            MapController.putHexMapValue(h, b, (byte) GameData.NUMBER_OF_TILES_PLACED);
+            MapController.putHexMapValue(h, b);
             if (!GameData.FIRST_PIECE)
                 GameData.HUMAN_PLAYER_TURN = !GameData.HUMAN_PLAYER_TURN;
-            GameData.HEX_LIST.add(h);
             GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
-            GameData.NUMBER_OF_TILES_PLACED = GameData.NUMBER_OF_TILES_PLACED + 1;
-            GameData.FREE_TILES_LEFT = GameData.FREE_TILES_LEFT - 1;
+            GameLogicController.currentGameState.NUMBER_OF_TILES_PLACED++;
+            GameLogicController.currentGameState.FREE_TILES_LEFT--;
+            GameLogicController.addCurrentGameState();
             drawHexTile(h, b);
         }
     }
@@ -81,13 +84,10 @@ public class BoardController extends MouseAdapter {
     }
 
     public static void revertLastMovement() {
-        if (!GameData.HEX_LIST.isEmpty()) {
-            Hexagon h = GameData.HEX_LIST.remove(GameData.HEX_LIST.size() - 1);
-            MapController.putHexMapValue(h, (byte) 0, (byte) 0);
+        if (!GameData.GAME_STATES.isEmpty()) {
+            GameData.GAME_STATES.pop();
+            generateBoard(false);
             GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
-            GameData.NUMBER_OF_TILES_PLACED = GameData.NUMBER_OF_TILES_PLACED - 1;
-            GameData.FREE_TILES_LEFT = GameData.FREE_TILES_LEFT + 1;
-            drawHexTile(h, (byte) 0);
         }
     }
 }

@@ -3,17 +3,18 @@ package Controller;
 import AI.AIController;
 import Model.Constants;
 import Model.GameData;
+import Model.GameState;
 import Model.UnionFindTile;
 import View.InfoBox;
 
 import java.util.Iterator;
 
-import static java.lang.System.*;
-
 public class GameLogicController {
 
+    public static GameState currentGameState;
+
     private static boolean newRoundPossible() {
-        return GameData.FREE_TILES_LEFT / 4 != 0;
+        return currentGameState.FREE_TILES_LEFT / 4 != 0;
     }
 
     public static void newTurn() {
@@ -41,7 +42,7 @@ public class GameLogicController {
     }
 
     public static int[] getScore() {
-        Iterator it = GameData.CLUSTER_PARENT_ID_LIST.iterator();
+        Iterator it = currentGameState.CLUSTER_PARENT_ID_LIST.iterator();
         int[] score = {1, 1};
         // score[0] white score | score[1] black score
         while (it.hasNext()) {
@@ -55,12 +56,20 @@ public class GameLogicController {
     }
 
     /* returns the score in respect to the AI's color */
-    public static short getAIScore(){
+    public static short getAIScore() {
         int[] score = getScore();
-        if(GameData.HUMAN_PLAYER_FIRST){
+        if (GameData.HUMAN_PLAYER_FIRST) {
             return (short) score[1];
-        }else{
+        } else {
             return (short) score[2];
         }
+    }
+
+    public static void getCurrentGameState() {
+        currentGameState = new GameState(GameData.GAME_STATES.peek());
+    }
+
+    public static void addCurrentGameState() {
+        GameData.GAME_STATES.add(currentGameState);
     }
 }

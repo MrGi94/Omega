@@ -3,11 +3,8 @@ package AI;
 import Controller.GUI.BoardController;
 import Controller.GameLogicController;
 import Controller.MapController;
-import Model.Constants;
-import Model.GameData;
-import Model.Hexagon;
+import Model.*;
 import Model.TranspositionTable.TTEntry;
-import Model.UnionFindTile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,31 +28,31 @@ public class AIController {
         }
     }
 
-    public boolean isTerminalNode(HashMap<Hexagon, UnionFindTile> hex_map) {
-        hex_map.entrySet()
+    public boolean isTerminalNode(GameState gs) {
+        return gs.FREE_TILES_LEFT - 1 == 0;
     }
 
-    public long MiniMax4Idiots(HashMap<Hexagon, UnionFindTile> hex_map, int depth, Constants.PLAYER_TYPE type) {
-        if (terminal_node || depth == 0)
-            return Evaluate(s);
-        long score;
-        if (type == Constants.PLAYER_TYPE.MAX) {
-            score = Long.MIN_VALUE;
-            for (short child = 1; child <=; child++) {
-                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MIN);
-                if (value > score)
-                    score = value;
-            }
-        } else {
-            score = Long.MAX_VALUE;
-            for (short child = 1; child <= NumbSuccessors(s); child++) {
-                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MAX);
-                if (value < score)
-                    score = value;
-            }
-        }
-        return score;
-    }
+//    public long MiniMax4Idiots(GameState gs, int depth, Constants.PLAYER_TYPE type) {
+//        if (isTerminalNode(gs) || depth == 0)
+//            return Evaluate(s);
+//        long score;
+//        if (type == Constants.PLAYER_TYPE.MAX) {
+//            score = Long.MIN_VALUE;
+//            for (short child = 1; child <=; child++) {
+//                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MIN);
+//                if (value > score)
+//                    score = value;
+//            }
+//        } else {
+//            score = Long.MAX_VALUE;
+//            for (short child = 1; child <= NumbSuccessors(s); child++) {
+//                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MAX);
+//                if (value < score)
+//                    score = value;
+//            }
+//        }
+//        return score;
+//    }
 
     /* do the TT lockup and return the respective entry */
 //    public TTEntry retrieve() {
