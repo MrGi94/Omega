@@ -1,27 +1,28 @@
 package Controller;
 
+import Controller.GUI.BoardController;
 import Model.Constants;
 import Model.GameData;
 import Model.Hexagon;
 import Model.UnionFindTile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MapController {
 
     public static void generateHexMap(int map_radius) {
+        Random rand = new Random();
         GameData.HEX_MAP = new HashMap<>();
         GameData.UNION_FIND_MAP = new HashMap<>();
+        GameData.TRANSPOSITION_TABLE = new HashMap<>();
+        GameData.ZORBIST_WHITE_MOVE = rand.nextLong();
         map_radius--;
         for (int q = -map_radius; q <= map_radius; q++) {
             int r1 = Math.max(-map_radius, -q - map_radius);
             int r2 = Math.min(map_radius, -q + map_radius);
             for (int r = r1; r <= r2; r++) {
                 Hexagon h = new Hexagon(q, r, -q - r);
-                UnionFindTile uft = new UnionFindTile((byte) 0);
+                UnionFindTile uft = new UnionFindTile(rand.nextLong(), rand.nextLong());
                 GameData.HEX_MAP.put(h, uft);
             }
         }
@@ -113,7 +114,7 @@ public class MapController {
         UnionFindTile uft = getUnionFindTile(tile_id);
         do {
             if (uft == null)
-                return new UnionFindTile((byte) 0);
+                return new UnionFindTile();
             uft = getUnionFindTile(uft.getParent());
         } while (uft.getTileId() != uft.getParent());
         return uft;
@@ -136,5 +137,21 @@ public class MapController {
         setUnionFindTile(smallParent);
         setUnionFindTile(largeParent);
         GameData.CLUSTER_PARENT_ID_LIST.remove(smallParent.getTileId());
+    }
+
+
+    /* Transposition Table Control */
+
+    public static long getZobristBoardHash() {
+        long zobristKey = 0;
+        Byte b = BoardController.determineNextMoveColor();
+        for (Map.Entry<Hexagon, UnionFindTile> entry : getHexMapEntrySet()) {
+            if (entry.getValue().getColor() != 0){
+                zobristKey ^= entry.getValue().getHashValue();
+            }
+        }
+        if(!GameData.HUMAN_PLAYER_FIRST)
+            zobristKey ^= GameData.ZORBIST_WHITE_MOVE;
+        return zobristKey;
     }
 }

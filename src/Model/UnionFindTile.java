@@ -7,18 +7,24 @@ public class UnionFindTile implements java.io.Serializable {
     private byte size;
     private byte color;
 
-    public UnionFindTile(byte color) {
+    /* transposition table entries */
+    private long white_hash_value;
+    private long black_hash_value;
+
+    public UnionFindTile() {
         this.size = 1;
         this.parent = 0;
         this.tile_id = 0;
-        this.color = color;
+        this.color = 0;
     }
 
-    public UnionFindTile(byte parent_id, byte color) {
+    public UnionFindTile(long white_hash_value, long black_hash_value) {
         this.size = 1;
-        this.parent = parent_id;
-        this.tile_id = parent_id;
-        this.color = color;
+        this.parent = 0;
+        this.tile_id = 0;
+        this.color = 0;
+        this.white_hash_value = white_hash_value;
+        this.black_hash_value = black_hash_value;
     }
 
     public byte getColor() {
@@ -51,5 +57,12 @@ public class UnionFindTile implements java.io.Serializable {
 
     public void setSize(byte size) {
         this.size = size;
+    }
+
+    public long getHashValue() {
+        if (this.color == 1)
+            return white_hash_value;
+        else
+            return black_hash_value;
     }
 }

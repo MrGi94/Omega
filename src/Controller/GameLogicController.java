@@ -53,4 +53,14 @@ public class GameLogicController {
         }
         return score;
     }
+
+    /* returns the score in respect to the AI's color */
+    public static short getAIScore(){
+        int[] score = getScore();
+        if(GameData.HUMAN_PLAYER_FIRST){
+            return (short) score[1];
+        }else{
+            return (short) score[2];
+        }
+    }
 }

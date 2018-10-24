@@ -24,7 +24,6 @@ public class Constants {
     public static final String INFO_BOX_GAME_END_TITLE = "Game has finished";
     public static final String SERIALIZE_PATH = new File("").getAbsolutePath() + "/game_states/omega_game.ser";
 
-
     public static final Orientation BOARD_ORIENTATION = new Orientation(Math.sqrt(3.0), Math.sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, Math.sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5);
     public static final Point TILE_SIZE = new Point(25, 25);
     public static final Point BOARD_ORIGIN = new Point(430, 390);
@@ -36,4 +35,6 @@ public class Constants {
         add(new Hexagon(-1, 1, 0));
         add(new Hexagon(0, 1, -1));
     }};
+
+    public enum FLAG {EXACT, LOWERBOUND, UPPERBOUND}
 }

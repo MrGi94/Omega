@@ -1,5 +1,7 @@
 package Model;
 
+import Model.TranspositionTable.TTEntry;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -12,10 +14,12 @@ public class GameData implements java.io.Serializable {
     public static int FREE_TILES_LEFT = 0;
     public static int NUMBER_OF_TILES_PLACED = 0;
     public static int BOARD_SIZE = 5;
+    public static long ZORBIST_WHITE_MOVE = 0;
     public static List<Hexagon> HEX_LIST = new ArrayList<>();
     public static HashMap<Hexagon, UnionFindTile> HEX_MAP;
     public static HashMap<Byte, UnionFindTile> UNION_FIND_MAP;
-    // just store the ID so u don't have to update the object constantly
+    public static HashMap<Long, TTEntry> TRANSPOSITION_TABLE;
+    // just store the ID so u don't have to update the objects constantly
     public static LinkedHashSet<Byte> CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>();
 
     private boolean human_player_first;
@@ -24,10 +28,12 @@ public class GameData implements java.io.Serializable {
     private int free_tiles_left;
     private int number_of_tiles_placed;
     private int board_size;
+    private long zorbist_white_move;
     private List<Hexagon> hex_list;
     private HashMap<Hexagon, UnionFindTile> hex_map;
     private HashMap<Byte, UnionFindTile> union_find_map;
     private LinkedHashSet<Byte> cluster_parent_id_list;
+    private HashMap<Long, TTEntry> transposition_table;
 
     public GameData() {
         this.human_player_first = HUMAN_PLAYER_FIRST;
@@ -40,6 +46,8 @@ public class GameData implements java.io.Serializable {
         this.hex_map = HEX_MAP;
         this.union_find_map = UNION_FIND_MAP;
         this.cluster_parent_id_list = CLUSTER_PARENT_ID_LIST;
+        this.zorbist_white_move = ZORBIST_WHITE_MOVE;
+        this.transposition_table = TRANSPOSITION_TABLE;
     }
 
     public static void setGameData(GameData gd) {
@@ -53,5 +61,7 @@ public class GameData implements java.io.Serializable {
         HEX_MAP = gd.hex_map;
         UNION_FIND_MAP = gd.union_find_map;
         CLUSTER_PARENT_ID_LIST = gd.cluster_parent_id_list;
+        ZORBIST_WHITE_MOVE = gd.zorbist_white_move;
+        TRANSPOSITION_TABLE = gd.transposition_table;
     }
 }
