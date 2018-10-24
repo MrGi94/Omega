@@ -5,7 +5,6 @@ import Model.TranspositionTable.TTEntry;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Stack;
 
 public class GameData implements java.io.Serializable {
     public static boolean HUMAN_PLAYER_FIRST = true;
@@ -13,7 +12,7 @@ public class GameData implements java.io.Serializable {
     public static boolean FIRST_PIECE = true;
     public static int BOARD_SIZE = 5;
     public static long ZORBIST_WHITE_MOVE = 0;
-    public static Stack<GameState> GAME_STATES;
+    public static GameState GAME_STATE;
     public static HashMap<Long, TTEntry> TRANSPOSITION_TABLE;
 
     private boolean human_player_first;

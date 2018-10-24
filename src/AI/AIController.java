@@ -1,18 +1,16 @@
 package AI;
 
 import Controller.GUI.BoardController;
-import Controller.GameLogicController;
 import Controller.MapController;
 import Model.*;
-import Model.TranspositionTable.TTEntry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class AIController {
 
-    public long zobristKey = 0;
+    public static Hexagon lastMove;
 
     public static void playRandomMove() {
         while (!GameData.HUMAN_PLAYER_TURN) {
@@ -24,35 +22,69 @@ public class AIController {
                     break;
                 }
             }
-            BoardController.placeOnFreeTile(h, b);
+            BoardController.placeOnFreeTile(h, GameData.GAME_STATE, false);
         }
     }
 
-    public boolean isTerminalNode(GameState gs) {
+    public static boolean isTerminalNode(GameState gs) {
         return gs.FREE_TILES_LEFT - 1 == 0;
     }
 
-//    public long MiniMax4Idiots(GameState gs, int depth, Constants.PLAYER_TYPE type) {
-//        if (isTerminalNode(gs) || depth == 0)
-//            return Evaluate(s);
-//        long score;
-//        if (type == Constants.PLAYER_TYPE.MAX) {
-//            score = Long.MIN_VALUE;
-//            for (short child = 1; child <=; child++) {
-//                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MIN);
-//                if (value > score)
-//                    score = value;
-//            }
-//        } else {
-//            score = Long.MAX_VALUE;
-//            for (short child = 1; child <= NumbSuccessors(s); child++) {
-//                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MAX);
-//                if (value < score)
-//                    score = value;
-//            }
-//        }
-//        return score;
-//    }
+    public static short numbSuccessors(GameState gs) {
+        return gs.FREE_TILES_LEFT;
+    }
+
+    public static GameState successor(GameState gs, short child) {
+        ArrayList<Hexagon> moves_list = getFreeTiles(gs);
+        lastMove = moves_list.get(child);
+        BoardController.placeOnFreeTile(lastMove, gs, true);
+        return gs;
+    }
+
+    private static ArrayList<Hexagon> getFreeTiles(GameState gs) {
+        ArrayList<Hexagon> free_tiles = new ArrayList<>();
+        for (Map.Entry<Hexagon, UnionFindTile> entry : gs.HEX_MAP.entrySet()) {
+            if (entry.getValue().getColor() == 0) {
+                free_tiles.add(entry.getKey());
+            }
+        }
+        return free_tiles;
+    }
+
+    /* returns the score in respect to the AI's color */
+    public static short evaluate(GameState gs) {
+        Iterator it = gs.CLUSTER_PARENT_ID_LIST.iterator();
+        short[] score = {1, 1};
+        // score[0] white score | score[1] black score
+        while (it.hasNext()) {
+            UnionFindTile uft = gs.UNION_FIND_MAP.get((byte) it.next());
+            if (uft.getTileId() % 2 == 0)
+                score[0] = (short) (score[0] * uft.getSize());
+            else
+                score[1] = (short) (score[1] * uft.getSize());
+        }
+        if (GameData.HUMAN_PLAYER_FIRST) {
+            return score[1];
+        } else {
+            return score[2];
+        }
+    }
+
+    public static long AlphaBeta(GameState gs, int depth, long alpha, long beta) {
+        if (isTerminalNode(gs) || depth == 0)
+            return evaluate(gs);
+        long score = Long.MIN_VALUE;
+        for (short child = 1; child <= numbSuccessors(gs); child++) {
+            long value = -AlphaBeta(successor(gs, child), depth - 1, -beta, -alpha);
+            if (value > score)
+                score = value;
+            if (value > alpha)
+                alpha = score;
+            if (score >= beta)
+                break;
+        }
+        return score;
+    }
 
     /* do the TT lockup and return the respective entry */
 //    public TTEntry retrieve() {

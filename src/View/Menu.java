@@ -61,4 +61,6 @@ public class Menu extends JFrame {
         menuBar.add(menu);
         return menuBar;
     }
+
+    // nice GUI https://stackoverflow.com/questions/20734438/algorithm-to-generate-a-hexagonal-grid-with-coordinate-system
 }

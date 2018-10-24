@@ -37,5 +37,4 @@ public class Constants {
     }};
 
     public enum FLAG {EXACT, LOWERBOUND, UPPERBOUND}
-    public enum PLAYER_TYPE {MAX, MIN};
 }

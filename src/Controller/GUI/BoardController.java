@@ -29,11 +29,8 @@ public class BoardController extends MouseAdapter {
     }
 
     public static void generateBoard(boolean createNew) {
-        if (createNew) {
+        if (createNew)
             MapController.generateHexMap(GameData.BOARD_SIZE);
-        }
-        GameLogicController.getCurrentGameState();
-        Menu.board.removeAll();
         for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
             drawHexTile(entry.getKey(), entry.getValue().getColor());
         }
@@ -41,29 +38,30 @@ public class BoardController extends MouseAdapter {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        GameLogicController.getCurrentGameState();
         if (GameData.HUMAN_PLAYER_TURN) {
             Hexagon h = Layout.pixelToHex(new Point(e.getX(), e.getY() - 31)).hexRound();
-            Byte b = determineNextMoveColor();
-            placeOnFreeTile(h, b);
+            placeOnFreeTile(h, GameData.GAME_STATE, false);
         } else {
             GameLogicController.newTurn();
         }
     }
 
-    public static void placeOnFreeTile(Hexagon h, Byte b) {
-        Byte val = MapController.getHexMapColor(h);
+    public static void placeOnFreeTile(Hexagon h, GameState gs, boolean isAI) {
+        Byte b = determineNextMoveColor();
+        Byte val = MapController.getHexMapColor(h, gs);
         if (val != null && val == 0) {
-            MapController.putHexMapValue(h, b);
+            MapController.putHexMapValue(h, b, GameData.GAME_STATE);
             if (!GameData.FIRST_PIECE)
                 GameData.HUMAN_PLAYER_TURN = !GameData.HUMAN_PLAYER_TURN;
             GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
-            GameLogicController.currentGameState.NUMBER_OF_TILES_PLACED++;
-            GameLogicController.currentGameState.FREE_TILES_LEFT--;
-            GameLogicController.addCurrentGameState();
-            drawHexTile(h, b);
+            GameData.GAME_STATE.NUMBER_OF_TILES_PLACED++;
+            GameData.GAME_STATE.FREE_TILES_LEFT--;
+            if(!isAI)
+                drawHexTile(h, b);
         }
     }
+
+
 
     private static Color getColorByByte(Byte b) {
         if (b == 0)
@@ -83,11 +81,11 @@ public class BoardController extends MouseAdapter {
         return b;
     }
 
-    public static void revertLastMovement() {
-        if (!GameData.GAME_STATES.isEmpty()) {
-            GameData.GAME_STATES.pop();
-            generateBoard(false);
-            GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
-        }
-    }
+//    public static void revertLastMovement() {
+//        if (!GameData.GAME_STATES.isEmpty()) {
+//            GameData.GAME_STATES.pop();
+//            generateBoard(false);
+//            GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
+//        }
+//    }
 }
