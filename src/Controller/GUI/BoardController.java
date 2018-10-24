@@ -33,6 +33,7 @@ public class BoardController extends MouseAdapter {
             MapController.generateHexMap(GameData.BOARD_SIZE);
         }
         GameLogicController.getCurrentGameState();
+        Menu.board.removeAll();
         for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
             drawHexTile(entry.getKey(), entry.getValue().getColor());
         }
@@ -59,7 +60,6 @@ public class BoardController extends MouseAdapter {
             GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
             GameLogicController.currentGameState.NUMBER_OF_TILES_PLACED++;
             GameLogicController.currentGameState.FREE_TILES_LEFT--;
-            GameLogicController.currentGameState.HEX_STACK.add(h);
             GameLogicController.addCurrentGameState();
             drawHexTile(h, b);
         }

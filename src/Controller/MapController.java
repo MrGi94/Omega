@@ -11,9 +11,6 @@ public class MapController {
         Random rand = new Random();
         GameData.GAME_STATES = new Stack<>();
         GameState gs = new GameState();
-        Hexagon h1 = new Hexagon(0, 0, 0);
-        Hexagon h2 = new Hexagon(0, 0, 0);
-        boolean b = h1.equals(h2);
         GameData.TRANSPOSITION_TABLE = new HashMap<>();
         GameData.ZORBIST_WHITE_MOVE = rand.nextLong();
         map_radius--;
