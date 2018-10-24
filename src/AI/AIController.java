@@ -1,6 +1,28 @@
 package AI;
 
+import Controller.GUI.BoardController;
+import Model.GameData;
+import Controller.MapController;
+import Model.Hexagon;
+import Model.UnionFindTile;
+
+import java.util.Map;
+
 public class AIController {
+
+    public static void playRandomMove() {
+        while (!GameData.HUMAN_PLAYER_TURN) {
+            Byte b = BoardController.determineNextMoveColor();
+            Hexagon h = new Hexagon();
+            for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
+                if (entry.getValue().getColor() == 0) {
+                    h = entry.getKey();
+                    break;
+                }
+            }
+            BoardController.placeOnFreeTile(h, b);
+        }
+    }
 
 //    public int AlphaBeta(state s, int depth, int alpha, int beta){
 //        if (terminal node|| depth == 0) return (Evaluate(s));

@@ -7,6 +7,12 @@ public class Hexagon implements java.io.Serializable {
     public final int r;
     public final int s;
 
+    public Hexagon() {
+        this.q = 0;
+        this.r = 0;
+        this.s = 0;
+    }
+
     public Hexagon(int q, int r, int s) {
         this.q = q;
         this.r = r;
@@ -32,23 +38,6 @@ public class Hexagon implements java.io.Serializable {
 
     public Hexagon rotateRight() {
         return new Hexagon(-r, -s, -q);
-    }
-
-    static public ArrayList<Hexagon> directions = new ArrayList<Hexagon>() {{
-        add(new Hexagon(1, 0, -1));
-        add(new Hexagon(1, -1, 0));
-        add(new Hexagon(0, -1, 1));
-        add(new Hexagon(-1, 0, 1));
-        add(new Hexagon(-1, 1, 0));
-        add(new Hexagon(0, 1, -1));
-    }};
-
-    static public Hexagon direction(int direction) {
-        return Hexagon.directions.get(direction);
-    }
-
-    public Hexagon neighbor(int direction) {
-        return add(Hexagon.direction(direction));
     }
 
     static public ArrayList<Hexagon> diagonals = new ArrayList<Hexagon>() {{

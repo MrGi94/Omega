@@ -1,33 +1,45 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class GameData implements java.io.Serializable {
     public static boolean HUMAN_PLAYER_FIRST = true;
     public static boolean HUMAN_PLAYER_TURN = true;
     public static boolean FIRST_PIECE = true;
     public static int FREE_TILES_LEFT = 0;
-    public static int BOARD_SIZE = 7;
-    public static Stack<Hexagon> HEX_STACK = new Stack<>();
-    public static HashMap<Hexagon, Byte> HEX_MAP;
+    public static int NUMBER_OF_TILES_PLACED = 0;
+    public static int BOARD_SIZE = 5;
+    public static List<Hexagon> HEX_LIST = new ArrayList<>();
+    public static HashMap<Hexagon, UnionFindTile> HEX_MAP;
+    public static HashMap<Byte, UnionFindTile> UNION_FIND_MAP;
+    // just store the ID so u don't have to update the object constantly
+    public static LinkedHashSet<Byte> CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>();
 
     private boolean human_player_first;
     private boolean human_player_turn;
     private boolean first_piece;
     private int free_tiles_left;
+    private int number_of_tiles_placed;
     private int board_size;
-    private Stack<Hexagon> hex_stack;
-    private HashMap<Hexagon, Byte> hex_map;
+    private List<Hexagon> hex_list;
+    private HashMap<Hexagon, UnionFindTile> hex_map;
+    private HashMap<Byte, UnionFindTile> union_find_map;
+    private LinkedHashSet<Byte> cluster_parent_id_list;
 
     public GameData() {
         this.human_player_first = HUMAN_PLAYER_FIRST;
         this.human_player_turn = HUMAN_PLAYER_TURN;
         this.first_piece = FIRST_PIECE;
         this.free_tiles_left = FREE_TILES_LEFT;
+        this.number_of_tiles_placed = NUMBER_OF_TILES_PLACED;
         this.board_size = BOARD_SIZE;
-        this.hex_stack = HEX_STACK;
+        this.hex_list = HEX_LIST;
         this.hex_map = HEX_MAP;
+        this.union_find_map = UNION_FIND_MAP;
+        this.cluster_parent_id_list = CLUSTER_PARENT_ID_LIST;
     }
 
     public static void setGameData(GameData gd) {
@@ -35,8 +47,11 @@ public class GameData implements java.io.Serializable {
         HUMAN_PLAYER_TURN = gd.human_player_turn;
         FIRST_PIECE = gd.first_piece;
         FREE_TILES_LEFT = gd.free_tiles_left;
+        NUMBER_OF_TILES_PLACED = gd.number_of_tiles_placed;
         BOARD_SIZE = gd.board_size;
-        HEX_STACK = gd.hex_stack;
+        HEX_LIST = gd.hex_list;
         HEX_MAP = gd.hex_map;
+        UNION_FIND_MAP = gd.union_find_map;
+        CLUSTER_PARENT_ID_LIST = gd.cluster_parent_id_list;
     }
 }

@@ -1,7 +1,7 @@
 package View;
 
-import Controller.BoardController;
-import Controller.MenuController;
+import Controller.GUI.BoardController;
+import Controller.GUI.MenuController;
 import Model.Constants;
 
 import javax.swing.*;

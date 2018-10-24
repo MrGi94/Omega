@@ -1,5 +1,8 @@
-package Controller;
+package Controller.GUI;
 
+import Controller.GUI.BoardController;
+import Controller.GameLogicController;
+import Controller.SerializeBoard;
 import Model.Constants;
 import Model.GameData;
 import View.InfoBox;
@@ -24,14 +27,15 @@ public class MenuController implements ActionListener {
             case Constants.MENU_ITEM_EXIT:
                 System.exit(0);
             case Constants.MENU_ITEM_NEW_GAME:
+//                GameData.BOARD_SIZE = 5;
+//                BoardController.generateBoard(true);
+//                GameLogicController.newTurn();
                 try {
                     int game_size = Integer.parseInt(JOptionPane.showInputDialog(Constants.INPUT_BOARD_SIZE));
-                    if (game_size >= 4 && game_size <= 10) {
+                    if (game_size >= 2 && game_size <= 10) {
                         GameData.BOARD_SIZE = game_size;
                         BoardController.generateBoard(true);
-                        if(!GameData.HUMAN_PLAYER_FIRST){
-                            // computer turn
-                        }
+                        GameLogicController.newTurn();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();

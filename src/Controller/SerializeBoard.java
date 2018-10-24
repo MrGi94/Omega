@@ -8,6 +8,7 @@ public class SerializeBoard {
 
     public static boolean serializeBoard(Object o) {
         try {
+            String s = Constants.SERIALIZE_PATH;
             FileOutputStream fileOut = new FileOutputStream(Constants.SERIALIZE_PATH);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(o);
