@@ -61,26 +61,26 @@ public class Hexagon implements java.io.Serializable {
         return subtract(b).length();
     }
 
-    @Override
-    public int hashCode() {
-        final int PRIMEQ = 31;
-        final int PRIMER = 17;
-        final int PRIMES = 23;
-        return PRIMEQ * this.q + PRIMER * this.r + PRIMES * this.s;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null)
-            return false;
-
-        if (o == this)
-            return true;
-
-        if (o.getClass() != getClass())
-            return false;
-
-        Hexagon b = (Hexagon) o;
-        return this.q == b.q && this.r == b.r && this.s == b.s;
-    }
+//    @Override
+//    public int hashCode() {
+//        final int PRIMEQ = 31;
+//        final int PRIMER = 17;
+//        final int PRIMES = 23;
+//        return PRIMEQ * this.q + PRIMER * this.r + PRIMES * this.s;
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (o == null)
+//            return false;
+//
+//        if (o == this)
+//            return true;
+//
+//        if (o.getClass() != getClass())
+//            return false;
+//
+//        Hexagon b = (Hexagon) o;
+//        return this.q == b.q && this.r == b.r && this.s == b.s;
+//    }
 }

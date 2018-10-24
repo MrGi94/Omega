@@ -23,11 +23,6 @@ public class Menu extends JFrame {
         setBounds(0, 0, 900, 800);
     }
 
-    public void newBoard(){
-        board = new Board();
-        getContentPane().add(board);
-    }
-
     private JMenuBar generateMenu(MenuController menuController) {
         JMenuBar menuBar = new JMenuBar();
         JMenu subMenu, menu = new JMenu(Constants.MENU_FILE);

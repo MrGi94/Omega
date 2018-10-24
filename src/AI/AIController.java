@@ -1,18 +1,12 @@
 package AI;
 
 import Controller.GUI.BoardController;
-import Controller.GameLogicController;
 import Controller.MapController;
 import Model.*;
-import Model.TranspositionTable.TTEntry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class AIController {
-
-    public long zobristKey = 0;
 
     public static void playRandomMove() {
         while (!GameData.HUMAN_PLAYER_TURN) {
@@ -32,27 +26,31 @@ public class AIController {
         return gs.FREE_TILES_LEFT - 1 == 0;
     }
 
-//    public long MiniMax4Idiots(GameState gs, int depth, Constants.PLAYER_TYPE type) {
-//        if (isTerminalNode(gs) || depth == 0)
-//            return Evaluate(s);
-//        long score;
-//        if (type == Constants.PLAYER_TYPE.MAX) {
-//            score = Long.MIN_VALUE;
-//            for (short child = 1; child <=; child++) {
-//                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MIN);
-//                if (value > score)
-//                    score = value;
-//            }
-//        } else {
-//            score = Long.MAX_VALUE;
-//            for (short child = 1; child <= NumbSuccessors(s); child++) {
-//                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MAX);
-//                if (value < score)
-//                    score = value;
-//            }
-//        }
-//        return score;
-//    }
+    public long MiniMax4Idiots(GameState gs, int depth, Constants.PLAYER_TYPE type) {
+        if (isTerminalNode(gs) || depth == 0)
+            return evaluate(gs);
+        long score;
+        if (type == Constants.PLAYER_TYPE.MAX) {
+            score = Long.MIN_VALUE;
+            for (short child = 1; child <= NumbSuccessors(s); child++) {
+                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MIN);
+                if (value > score)
+                    score = value;
+            }
+        } else {
+            score = Long.MAX_VALUE;
+            for (short child = 1; child <= NumbSuccessors(s); child++) {
+                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MAX);
+                if (value < score)
+                    score = value;
+            }
+        }
+        return score;
+    }
+
+    public short evaluate(GameState gs){
+
+    }
 
     /* do the TT lockup and return the respective entry */
 //    public TTEntry retrieve() {

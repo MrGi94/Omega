@@ -1,20 +1,16 @@
 package Model;
 
-import Model.TranspositionTable.TTEntry;
-
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Stack;
 
 public class GameData implements java.io.Serializable {
     public static boolean HUMAN_PLAYER_FIRST = true;
     public static boolean HUMAN_PLAYER_TURN = true;
     public static boolean FIRST_PIECE = true;
     public static int BOARD_SIZE = 5;
-    public static long ZORBIST_WHITE_MOVE = 0;
-    public static Stack<GameState> GAME_STATES;
-    public static HashMap<Long, TTEntry> TRANSPOSITION_TABLE;
+   // public static long ZORBIST_WHITE_MOVE = 0;
+    //public static HashMap<Long, TTEntry> TRANSPOSITION_TABLE;
 
     private boolean human_player_first;
     private boolean human_player_turn;
@@ -34,8 +30,8 @@ public class GameData implements java.io.Serializable {
         this.human_player_turn = HUMAN_PLAYER_TURN;
         this.first_piece = FIRST_PIECE;
         this.board_size = BOARD_SIZE;
-        this.zorbist_white_move = ZORBIST_WHITE_MOVE;
-        this.transposition_table = TRANSPOSITION_TABLE;
+//        this.zorbist_white_move = ZORBIST_WHITE_MOVE;
+//        this.transposition_table = TRANSPOSITION_TABLE;
     }
 
     public static void setGameData(GameData gd) {
@@ -43,7 +39,7 @@ public class GameData implements java.io.Serializable {
         HUMAN_PLAYER_TURN = gd.human_player_turn;
         FIRST_PIECE = gd.first_piece;
         BOARD_SIZE = gd.board_size;
-        ZORBIST_WHITE_MOVE = gd.zorbist_white_move;
-        TRANSPOSITION_TABLE = gd.transposition_table;
+//        ZORBIST_WHITE_MOVE = gd.zorbist_white_move;
+//        TRANSPOSITION_TABLE = gd.transposition_table;
     }
 }

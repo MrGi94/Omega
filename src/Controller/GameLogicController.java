@@ -10,9 +10,7 @@ import View.InfoBox;
 import java.util.Iterator;
 
 public class GameLogicController {
-
-    public static GameState currentGameState;
-
+    
     private static boolean newRoundPossible() {
         return currentGameState.FREE_TILES_LEFT / 4 != 0;
     }
@@ -67,6 +65,7 @@ public class GameLogicController {
 
     public static void getCurrentGameState() {
         currentGameState = new GameState(GameData.GAME_STATES.peek());
+        int i = 0;
     }
 
     public static void addCurrentGameState() {
