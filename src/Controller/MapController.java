@@ -87,6 +87,15 @@ public class MapController {
         return GameData.HEX_MAP.get(h);
     }
 
+    public static ArrayList<Hexagon> getFreeTiles() {
+        ArrayList<Hexagon> free_tiles = new ArrayList<>();
+        for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
+            if (entry.getValue().getColor() == 0) {
+                free_tiles.add(entry.getKey());
+            }
+        }
+        return free_tiles;
+    }
 
 
     /* Union Find Map Control */
@@ -146,11 +155,11 @@ public class MapController {
         long zobristKey = 0;
         Byte b = BoardController.determineNextMoveColor();
         for (Map.Entry<Hexagon, UnionFindTile> entry : getHexMapEntrySet()) {
-            if (entry.getValue().getColor() != 0){
+            if (entry.getValue().getColor() != 0) {
                 zobristKey ^= entry.getValue().getHashValue();
             }
         }
-        if(!GameData.HUMAN_PLAYER_FIRST)
+        if (!GameData.HUMAN_PLAYER_FIRST)
             zobristKey ^= GameData.ZORBIST_WHITE_MOVE;
         return zobristKey;
     }

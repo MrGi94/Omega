@@ -2,14 +2,20 @@ package AI;
 
 import Controller.GUI.BoardController;
 import Controller.GameLogicController;
-import Model.*;
 import Controller.MapController;
+import Model.Constants;
+import Model.GameData;
+import Model.Hexagon;
 import Model.TranspositionTable.TTEntry;
+import Model.UnionFindTile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AIController {
+
+    public long zobristKey = 0;
 
     public static void playRandomMove() {
         while (!GameData.HUMAN_PLAYER_TURN) {
@@ -25,81 +31,100 @@ public class AIController {
         }
     }
 
-//    public int AlphaBeta(state s, int depth, int alpha, int beta){
-//        if (terminal node|| depth == 0) return (Evaluate(s));
-//        score = -inf;
-//        for(child = 1; child <= numbSuccessors(s); child++){
-//            value = -AlphaBeta(successor(s, child), depth-1, -beta, -alpha);
-//            if(value > score) score = value;
-//            if(score > alpha) alpha = score;
-//            if(score >= beta) break;
-//        }
-//        return(score);
-//    }
-
-    /* do the TT lockup and return the respective entry */
-    public TTEntry retrieve(HashMap<Hexagon, UnionFindTile> hex_map) {
-        return new TTEntry();
+    public boolean isTerminalNode(HashMap<Hexagon, UnionFindTile> hex_map) {
+        hex_map.entrySet()
     }
 
-    private void store(HashMap<Hexagon, UnionFindTile> hex_map, short bestMove, short bestValue, Constants.FLAG flag, byte depth) {
-        GameData.TRANSPOSITION_TABLE.put(zobristKey, new TTEntry(flag, depth, bestValue, bestMove));
-    }
-
-    private short evaluate(HashMap<Hexagon, UnionFindTile> hex_map) {
-        short score = GameLogicController.getAIScore();
-        score = (short) (Math.log(score) * 100);
+    public long MiniMax4Idiots(HashMap<Hexagon, UnionFindTile> hex_map, int depth, Constants.PLAYER_TYPE type) {
+        if (terminal_node || depth == 0)
+            return Evaluate(s);
+        long score;
+        if (type == Constants.PLAYER_TYPE.MAX) {
+            score = Long.MIN_VALUE;
+            for (short child = 1; child <=; child++) {
+                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MIN);
+                if (value > score)
+                    score = value;
+            }
+        } else {
+            score = Long.MAX_VALUE;
+            for (short child = 1; child <= NumbSuccessors(s); child++) {
+                long value = MiniMax4Idiots(Successor(s, child), depth - 1, Constants.PLAYER_TYPE.MAX);
+                if (value < score)
+                    score = value;
+            }
+        }
         return score;
     }
 
-    public short AlphaBetaWithTT(HashMap<Hexagon, UnionFindTile> hex_map, byte depth, short alpha, short beta) {
-        int olda = alpha; /* save original alpha value */
-        TTEntry n = retrieve(hex_map); /* Transposition-table lookup */
-        if (n.getDepth() >= depth) {
-            if (n.getFlag() == Constants.FLAG.EXACT) {
-                return n.getValue();
-            } else if (n.getFlag() == Constants.FLAG.LOWERBOUND) {
-                alpha = (short) Math.max(alpha, n.getValue());
-            } else if (n.getFlag() == Constants.FLAG.UPPERBOUND) {
-                beta = (short) Math.min(beta, n.getValue());
-            }
-            if (alpha >= beta) {
-                return n.getValue();
-            }
-        }
-        /* if position is not found, depth will be -1 */
-        if (depth == 0 || terminalnode){
-            g = evaluate(hex_map); /* leaf node */
-        }
+    /* do the TT lockup and return the respective entry */
+//    public TTEntry retrieve() {
+//        return GameData.TRANSPOSITION_TABLE.get(zobristKey);
+//    }
+//
+//    private void store(short bestMove, short bestValue, Constants.FLAG flag, byte depth) {
+//        GameData.TRANSPOSITION_TABLE.put(zobristKey, new TTEntry(flag, depth, bestValue, bestMove));
+//    }
+//
+//    private short evaluate() {
+//        short score = GameLogicController.getAIScore();
+//        score = (short) (Math.log(score) * 100);
+//        return score;
+//    }
 
-        /* this part is just plain alpha-beta */
-        short bestValue = Short.MIN_VALUE;
-        short bestMove = 0;
-        for (short child = 1; child <= NumSuccessors(hex_map); child++) {
-            short result = -AlphaBetaWithTT(Succssor(child), -beta, -alpha, depth - 1);
-            if (result > bestValue) {
-                bestValue = result;
-                bestMove = child;
-                if (bestValue >= alpha)
-                    alpha = bestValue;
-                if (bestValue >= beta)
-                    break;
-                /* traditional transposition table storing of bounds */
-            }
-            Constants.FLAG flag = Constants.FLAG.EXACT;
-            if (bestValue <= olda) {
-                /* fail-low result implies an upper bound */
-                flag = Constants.FLAG.UPPERBOUND;
-            } else if (bestValue >= beta) {
-                /* fail-high result implies an lower bound */
-                flag = Constants.FLAG.LOWERBOUND;
-            }
-            /* this part stores information in the transposition table */
-            store(hex_map, bestMove, bestValue, flag, depth);
-            /* not sure about this placement here (could be outside for loop) */
-            return bestValue;
-        }
-    }
+//    public short AlphaBetaWithTT(short alpha, short beta, byte depth) {
+//        int olda = alpha; /* save original alpha value */
+//        TTEntry n = retrieve(); /* Transposition-table lookup */
+//        if (n.getDepth() >= depth) {
+//            if (n.getFlag() == Constants.FLAG.EXACT) {
+//                return n.getValue();
+//            } else if (n.getFlag() == Constants.FLAG.LOWERBOUND) {
+//                alpha = (short) Math.max(alpha, n.getValue());
+//            } else if (n.getFlag() == Constants.FLAG.UPPERBOUND) {
+//                beta = (short) Math.min(beta, n.getValue());
+//            }
+//            if (alpha >= beta) {
+//                return n.getValue();
+//            }
+//        }
+//        /* if position is not found, depth will be -1 */
+//        if (depth == 0 || GameData.FREE_TILES_LEFT == 1) {
+//            return (evaluate()); /* leaf node */
+//        }
+//
+//        /* this part is just plain alpha-beta */
+//        short bestValue = Short.MIN_VALUE;
+//        short bestMove = 0;
+//        ArrayList<Hexagon> free_tiles = MapController.getFreeTiles();
+//        for (short child = 1; child <= GameData.FREE_TILES_LEFT - 1; child++) {
+//            Hexagon h = free_tiles.get(child);
+//            UnionFindTile utf = GameData.HEX_MAP.get(h);
+//            utf.setColor(BoardController.determineNextMoveColor());
+//            GameData.HEX_MAP.put(h, utf);
+//            short result = (short) -AlphaBetaWithTT((short) -beta, (short) -alpha, (byte) (depth - 1));
+//            if (result > bestValue) {
+//                bestValue = result;
+//                bestMove = child;
+//                if (bestValue >= alpha)
+//                    alpha = bestValue;
+//                if (bestValue >= beta)
+//                    break;
+//                /* traditional transposition table storing of bounds */
+//            }
+//            Constants.FLAG flag = Constants.FLAG.EXACT;
+//            if (bestValue <= olda) {
+//                /* fail-low result implies an upper bound */
+//                flag = Constants.FLAG.UPPERBOUND;
+//            } else if (bestValue >= beta) {
+//                /* fail-high result implies an lower bound */
+//                flag = Constants.FLAG.LOWERBOUND;
+//            }
+//            /* this part stores information in the transposition table */
+//            store(bestMove, bestValue, flag, depth);
+//        }
+//        /* not sure about this placement here (could be inside for loop) */
+//        return bestValue;
+//    }
 
 //    I started with a version that gives each player a single placement of their color instead of the double placement move.
 //    This version was quite interesting in that it would always attempt to form groups of 3 pieces on the board.
