@@ -57,7 +57,7 @@ public class MenuController implements ActionListener {
                             Constants.INFO_BOX_SERIALIZE_TITLE_SUCCESS);
                 break;
             case Constants.MENU_ITEM_BACK:
-                //BoardController.revertLastMovement();
+                BoardController.revertLastMovement();
                 break;
         }
     }

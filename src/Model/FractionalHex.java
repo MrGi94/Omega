@@ -1,14 +1,12 @@
 package Model;
 
-import java.util.ArrayList;
-
 public class FractionalHex {
 
-    public final double q;
-    public final double r;
-    public final double s;
+    private final double q;
+    private final double r;
+    private final double s;
 
-    public FractionalHex(double q, double r, double s) {
+    FractionalHex(double q, double r, double s) {
         this.q = q;
         this.r = r;
         this.s = s;
@@ -30,22 +28,5 @@ public class FractionalHex {
             si = -qi - ri;
         }
         return new Hexagon(qi, ri, si);
-    }
-
-    public FractionalHex hexLerp(FractionalHex b, double t) {
-        return new FractionalHex(q * (1 - t) + b.q * t, r * (1 - t) + b.r * t, s * (1 - t) + b.s * t);
-    }
-
-    static public ArrayList<Hexagon> hexLinedraw(Hexagon a, Hexagon b) {
-        int N = a.distance(b);
-        FractionalHex a_nudge = new FractionalHex(a.q + 0.000001, a.r + 0.000001, a.s - 0.000002);
-        FractionalHex b_nudge = new FractionalHex(b.q + 0.000001, b.r + 0.000001, b.s - 0.000002);
-        ArrayList<Hexagon> results = new ArrayList<Hexagon>() {{
-        }};
-        double step = 1.0 / Math.max(N, 1);
-        for (int i = 0; i <= N; i++) {
-            results.add(a_nudge.hexLerp(b_nudge, step * i).hexRound());
-        }
-        return results;
     }
 }

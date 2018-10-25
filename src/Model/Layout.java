@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Layout {
 
-    public static Point hexToPixel(Hexagon h) {
+    private static Point hexToPixel(Hexagon h) {
         Orientation M = Constants.BOARD_ORIENTATION;
         double x = (M.f0 * h.q + M.f1 * h.r) * Constants.TILE_SIZE.x;
         double y = (M.f2 * h.q + M.f3 * h.r) * Constants.TILE_SIZE.y;
@@ -19,14 +19,14 @@ public class Layout {
         return new FractionalHex(q, r, -q - r);
     }
 
-    public static Point hexCornerOffset(int corner) {
+    private static Point hexCornerOffset(int corner) {
         Orientation M = Constants.BOARD_ORIENTATION;
         double angle = 2.0 * Math.PI * (M.start_angle - corner) / 6;
         return new Point(Constants.TILE_SIZE.x * Math.cos(angle), Constants.TILE_SIZE.y * Math.sin(angle));
     }
 
     public static ArrayList<Point> polygonCorners(Hexagon h) {
-        ArrayList<Point> corners = new ArrayList<Point>();
+        ArrayList<Point> corners = new ArrayList<>();
         Point center = hexToPixel(h);
         for (int i = 0; i < 6; i++) {
             Point offset = hexCornerOffset(i);

@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class BoardController extends MouseAdapter {
 
-    public static void drawHexTile(Hexagon h, Byte b) {
+    private static void drawHexTile(Hexagon h, Byte b) {
         ArrayList<Point> corners = Layout.polygonCorners(h);
         int[] x = new int[6];
         int[] y = new int[6];
@@ -53,8 +53,8 @@ public class BoardController extends MouseAdapter {
             if (!GameData.FIRST_PIECE)
                 GameData.HUMAN_PLAYER_TURN = !GameData.HUMAN_PLAYER_TURN;
             GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
-            GameData.GAME_STATE.NUMBER_OF_TILES_PLACED++;
-            GameData.GAME_STATE.FREE_TILES_LEFT--;
+            GameData.FREE_TILES_LEFT--;
+            GameData.HEX_STACK.add(h);
             drawHexTile(h, b);
         }
     }
@@ -68,7 +68,7 @@ public class BoardController extends MouseAdapter {
             return Color.black;
     }
 
-    public static byte determineNextMoveColor() {
+    private static byte determineNextMoveColor() {
         Byte b = 2;
         if ((GameData.HUMAN_PLAYER_FIRST && GameData.FIRST_PIECE) ||
                 (!GameData.HUMAN_PLAYER_FIRST && !GameData.FIRST_PIECE)) {
@@ -77,11 +77,15 @@ public class BoardController extends MouseAdapter {
         return b;
     }
 
-//    public static void revertLastMovement() {
-//        if (!GameData.GAME_STATES.isEmpty()) {
-//            GameData.GAME_STATES.pop();
-//            generateBoard(false);
-//            GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
-//        }
-//    }
+    public static void revertLastMovement() {
+        if (!GameData.HEX_STACK.isEmpty()) {
+            Hexagon h = GameData.HEX_STACK.pop();
+            drawHexTile(h, (byte) 0);
+            if (GameData.FIRST_PIECE)
+                GameData.HUMAN_PLAYER_TURN = !GameData.HUMAN_PLAYER_TURN;
+            GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
+            GameData.FREE_TILES_LEFT++;
+            MapController.disconnectTile(h);
+        }
+    }
 }

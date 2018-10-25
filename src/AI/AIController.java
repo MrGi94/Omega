@@ -19,7 +19,6 @@ public class AIController {
     private byte free_tiles_left;
     private boolean isAIMaximizing;
     private int evaluations = 1;
-    private int eval_childs = 1;
 
 
 //    public static void playRandomMove() {
@@ -40,17 +39,13 @@ public class AIController {
         this.cluster_parent_id = copyClusterParent(cluster_parent_id);
         this.free_tiles_left = free_tiles_left;
         this.isAIMaximizing = isAIMaximizing;
-        if (firstPiece)
-            this.firstPiece = true;
-        else
-            this.firstPiece = false;
+        this.firstPiece = firstPiece;
     }
 
     private LinkedHashSet<Byte> copyClusterParent(LinkedHashSet<Byte> cluster_parent_id) {
         LinkedHashSet<Byte> set = new LinkedHashSet();
-        Iterator it = cluster_parent_id.iterator();
-        while (it.hasNext()) {
-            set.add((byte) it.next());
+        for (Object aCluster_parent_id : cluster_parent_id) {
+            set.add((byte) aCluster_parent_id);
         }
         return set;
     }
@@ -88,10 +83,10 @@ public class AIController {
     }
 
     private UnionFindTile[] unionTile(UnionFindTile[] position_array, byte move) {
-        Hexagon h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(position_array[move].getTileId());
+        Hexagon h = GameData.HEX_MAP_BY_ID.get(position_array[move].getTileId());
         ArrayList<Hexagon> valid_neighbors = MapController.getValidNeighbors(h);
         for (Hexagon entry : valid_neighbors) {
-            byte tile_id = GameData.GAME_STATE.HEX_MAP.get(entry).getTileId();
+            byte tile_id = GameData.HEX_MAP.get(entry).getTileId();
             if (position_array[tile_id].getColor() == position_array[move].getColor()) {
                 position_array = union(move, tile_id, position_array);
             }

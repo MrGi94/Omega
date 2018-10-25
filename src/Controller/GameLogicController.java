@@ -10,20 +10,20 @@ import java.util.Iterator;
 public class GameLogicController {
 
     private static boolean newRoundPossible() {
-        return GameData.GAME_STATE.FREE_TILES_LEFT / 4 != 0;
+        return GameData.FREE_TILES_LEFT / 4 != 0;
     }
 
     public static void newTurn() {
         if (newRoundPossible()) {
             if (!GameData.HUMAN_PLAYER_TURN) {
                 boolean maximizingPlayer = ((GameData.HUMAN_PLAYER_FIRST && !GameData.FIRST_PIECE) || (!GameData.HUMAN_PLAYER_FIRST && GameData.FIRST_PIECE));
-                AIController ai = new AIController(GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST, GameData.GAME_STATE.FREE_TILES_LEFT, GameData.FIRST_PIECE, maximizingPlayer);
-                ai.AlphaBeta(GameData.GAME_STATE.test_array, 0, maximizingPlayer, Long.MIN_VALUE, Long.MAX_VALUE);
+                AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT, GameData.FIRST_PIECE, maximizingPlayer);
+                ai.AlphaBeta(GameData.UNION_FIND_TILE_ARRAY, 0, maximizingPlayer, Long.MIN_VALUE, Long.MAX_VALUE);
                 Hexagon h;
                 if (maximizingPlayer)
-                    h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.bestMove);
+                    h = GameData.HEX_MAP_BY_ID.get(AIController.bestMove);
                 else
-                    h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.worstMove);
+                    h = GameData.HEX_MAP_BY_ID.get(AIController.worstMove);
                 BoardController.placeOnFreeTile(h);
                 newTurn();
             }
@@ -32,9 +32,9 @@ public class GameLogicController {
         }
     }
 
-    public static String generateScoreMessage() {
-        int[] score = getScore(GameData.GAME_STATE);
-        String message = "";
+    private static String generateScoreMessage() {
+        int[] score = getScore();
+        String message;
         if (score[0] > score[1]) {
             message = "White wins with " + score[0] + " points.\nWhereas black has " + score[1] + " points.";
         } else if (score[0] < score[1]) {
@@ -45,12 +45,12 @@ public class GameLogicController {
         return message;
     }
 
-    public static int[] getScore(GameState gs) {
-        Iterator it = gs.CLUSTER_PARENT_ID_LIST.iterator();
+    private static int[] getScore() {
+        Iterator it = GameData.CLUSTER_PARENT_ID_LIST.iterator();
         int[] score = {1, 1};
         // score[0] white score | score[1] black score
         while (it.hasNext()) {
-            UnionFindTile uft = gs.UNION_FIND_MAP.get(it.next());
+            UnionFindTile uft = GameData.UNION_FIND_MAP.get(it.next());
             if (uft.getColor() == 1)
                 score[0] = score[0] * uft.getSize();
             else
