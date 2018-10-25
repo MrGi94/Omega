@@ -11,11 +11,15 @@ public class AIController {
 
     private Deque lastMoves = new ArrayDeque();
     private short bestScore = Short.MIN_VALUE;
+    private short lowestScore = Short.MAX_VALUE;
     public static byte bestMove;
+    public static byte worstMove;
     private boolean firstPiece;
     private LinkedHashSet<Byte> cluster_parent_id;
     private byte free_tiles_left;
-    private boolean aiTurn = true;
+    private boolean isAIMaximizing;
+    private int evaluations = 1;
+    private int eval_childs = 1;
 
 
 //    public static void playRandomMove() {
@@ -32,9 +36,10 @@ public class AIController {
 //        }
 //    }
 
-    public AIController(LinkedHashSet<Byte> cluster_parent_id, byte free_tiles_left, boolean firstPiece) {
+    public AIController(LinkedHashSet<Byte> cluster_parent_id, byte free_tiles_left, boolean firstPiece, boolean isAIMaximizing) {
         this.cluster_parent_id = copyClusterParent(cluster_parent_id);
         this.free_tiles_left = free_tiles_left;
+        this.isAIMaximizing = isAIMaximizing;
         if (firstPiece)
             this.firstPiece = true;
         else
@@ -133,7 +138,7 @@ public class AIController {
     }
 
     /* returns the score in respect to the AI's color */
-    private short evaluate(UnionFindTile[] position_array) {
+    private short evaluate(UnionFindTile[] position_array, boolean isMaximizingPlayer) {
         Iterator it = cluster_parent_id.iterator();
         short[] score = {1, 1};
         // score[0] white score | score[1] black score
@@ -144,37 +149,58 @@ public class AIController {
             else
                 score[1] = (short) (score[1] * position_array[tile_id].getSize());
         }
-        if ((GameData.HUMAN_PLAYER_FIRST && firstPiece) || !GameData.HUMAN_PLAYER_FIRST && !firstPiece) {// && !aiTurn) || (!GameData.HUMAN_PLAYER_FIRST && aiTurn)) {
+        if (isMaximizingPlayer) {
             return score[0]; //(short) (Math.log(score[0]) * 100);
         } else {
             return score[1];//(short) (Math.log(score[1]) * 100);
         }
     }
 
-    public long AlphaBeta(UnionFindTile[] position_array, int depth, long alpha, long beta) {
-        if (isTerminalNode() || depth == 0) {
-            short s = evaluate(position_array);
-            if (s >= bestScore) {
-                bestMove = (byte) lastMoves.peekFirst();
-                bestScore = s;
+    public long AlphaBeta(UnionFindTile[] position_array, int depth, boolean isMaximizingPlayer, long alpha, long beta) {
+        if (isTerminalNode()) {
+            short s = evaluate(position_array, isMaximizingPlayer);
+            if (isAIMaximizing) {
+                if (s > bestScore) {
+                    bestMove = (byte) lastMoves.peekFirst();
+                    bestScore = s;
+                }
+            } else {
+                if (s < lowestScore) {
+                    worstMove = (byte) lastMoves.peekFirst();
+                    lowestScore = s;
+                }
             }
             firstPiece = !firstPiece;
             cluster_parent_id.remove(lastMoves.pollLast());
             free_tiles_left++;
+            System.out.println(evaluations);
+            evaluations++;
             return s;
         }
 
-        long score = Long.MIN_VALUE;
-        for (short child = 0; child < numbSuccessors(); child++) {
-            long value = -AlphaBeta(successor(position_array, child), depth - 1, -beta, -alpha);
-            if (value > score)
-                score = value;
-            if (value > alpha)
-                alpha = score;
-            if (score >= beta)
-                break;
+        if (isMaximizingPlayer) {
+            long bestVal = Long.MIN_VALUE;
+            for (short child = 0; child < numbSuccessors(); child++) {
+                System.out.println(child);
+                long value = AlphaBeta(successor(position_array, child), depth + 1, false, alpha, beta);
+                bestVal = Math.max(bestVal, value);
+                alpha = Math.max(alpha, bestVal);
+                if (beta <= alpha)
+                    break;
+            }
+            return bestVal;
+        } else {
+            long bestVal = Long.MAX_VALUE;
+            for (short child = 0; child < numbSuccessors(); child++) {
+                System.out.println(child);
+                long value = AlphaBeta(successor(position_array, child), depth + 1, true, alpha, beta);
+                bestVal = Math.min(bestVal, value);
+                beta = Math.min(alpha, bestVal);
+                if (beta <= alpha)
+                    break;
+            }
+            return bestVal;
         }
-        return score;
     }
 
     /* do the TT lockup and return the respective entry */

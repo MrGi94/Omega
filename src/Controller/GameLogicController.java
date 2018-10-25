@@ -16,9 +16,14 @@ public class GameLogicController {
     public static void newTurn() {
         if (newRoundPossible()) {
             if (!GameData.HUMAN_PLAYER_TURN) {
-                AIController ai = new AIController(GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST, GameData.GAME_STATE.FREE_TILES_LEFT, GameData.FIRST_PIECE);
-                ai.AlphaBeta(GameData.GAME_STATE.test_array, 15, Long.MIN_VALUE, Long.MAX_VALUE);
-                Hexagon h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.bestMove);
+                boolean maximizingPlayer = ((GameData.HUMAN_PLAYER_FIRST && !GameData.FIRST_PIECE) || (!GameData.HUMAN_PLAYER_FIRST && GameData.FIRST_PIECE));
+                AIController ai = new AIController(GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST, GameData.GAME_STATE.FREE_TILES_LEFT, GameData.FIRST_PIECE, maximizingPlayer);
+                ai.AlphaBeta(GameData.GAME_STATE.test_array, 0, maximizingPlayer, Long.MIN_VALUE, Long.MAX_VALUE);
+                Hexagon h;
+                if (maximizingPlayer)
+                    h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.bestMove);
+                else
+                    h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.worstMove);
                 BoardController.placeOnFreeTile(h);
                 newTurn();
             }

@@ -35,7 +35,6 @@ public class MapController {
             UnionFindTile uft = GameData.GAME_STATE.HEX_MAP.get(h);
             uft.setColor(color);
             GameData.GAME_STATE.HEX_MAP.put(h, uft);
-            GameData.GAME_STATE.POSITION_ARRAY[uft.getTileId()] = uft.getColor();
             GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
             setUnionFindTile(uft);
             connectNeighbors(h, color);
