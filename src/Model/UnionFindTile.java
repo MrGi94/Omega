@@ -11,10 +11,10 @@ public class UnionFindTile implements java.io.Serializable {
     private long white_hash_value;
     private long black_hash_value;
 
-    public UnionFindTile() {
+    public UnionFindTile(byte tile_id) {
         this.size = 1;
-        this.parent = 0;
-        this.tile_id = 0;
+        this.parent = tile_id;
+        this.tile_id = tile_id;
         this.color = 0;
     }
 

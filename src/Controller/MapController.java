@@ -12,14 +12,18 @@ public class MapController {
         GameData.GAME_STATE = new GameState();
         GameData.TRANSPOSITION_TABLE = new HashMap<>();
         GameData.ZORBIST_WHITE_MOVE = rand.nextLong();
+        byte tile_id = 0;
         map_radius--;
         for (int q = -map_radius; q <= map_radius; q++) {
             int r1 = Math.max(-map_radius, -q - map_radius);
             int r2 = Math.min(map_radius, -q + map_radius);
             for (int r = r1; r <= r2; r++) {
                 Hexagon h = new Hexagon(q, r, -q - r);
-                UnionFindTile uft = new UnionFindTile(rand.nextLong(), rand.nextLong());
+                UnionFindTile uft = new UnionFindTile(tile_id);
                 GameData.GAME_STATE.HEX_MAP.put(h, uft);
+                setUnionFindTile(uft, GameData.GAME_STATE);
+                GameData.GAME_STATE.HEX_MAP_BY_ID.put(tile_id, h);
+                tile_id++;
             }
         }
         GameData.GAME_STATE.FREE_TILES_LEFT = (byte) GameData.GAME_STATE.HEX_MAP.size();
@@ -28,14 +32,12 @@ public class MapController {
     public static void putHexMapValue(Hexagon h, Byte color, GameState gs) {
         if (gs.HEX_MAP.containsKey(h)) {
             UnionFindTile uft = gs.HEX_MAP.get(h);
-            byte tile_id = gs.NUMBER_OF_TILES_PLACED;
-            uft.setTileId(tile_id);
-            uft.setParent(tile_id);
             uft.setColor(color);
             gs.HEX_MAP.put(h, uft);
+            gs.POSITION_ARRAY[uft.getTileId()] = uft.getColor();
             gs.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
             setUnionFindTile(uft, gs);
-            connectNeighbors(h, color, tile_id, gs);
+            connectNeighbors(h, color, gs);
         }
     }
 
@@ -85,10 +87,10 @@ public class MapController {
 
     /* Union Find Map Control */
 
-    public static void connectNeighbors(Hexagon h, byte color, byte tile_id, GameState gs) {
+    public static void connectNeighbors(Hexagon h, byte color, GameState gs) {
         ArrayList<Hexagon> neighbor_list = getNeighborsByColor(h, color, gs);
         for (Hexagon neighbor : neighbor_list) {
-            union(getHexMapValue(neighbor).getTileId(), tile_id, gs);
+            union(getHexMapValue(neighbor).getTileId(), gs.NUMBER_OF_TILES_PLACED, gs);
         }
     }
 
@@ -108,7 +110,7 @@ public class MapController {
         UnionFindTile uft = getUnionFindTile(tile_id, gs);
         do {
             if (uft == null)
-                return new UnionFindTile();
+                return new UnionFindTile((byte) -1);
             uft = getUnionFindTile(uft.getParent(), gs);
         } while (uft.getTileId() != uft.getParent());
         return uft;

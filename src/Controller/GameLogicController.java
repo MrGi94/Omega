@@ -2,10 +2,7 @@ package Controller;
 
 import AI.AIController;
 import Controller.GUI.BoardController;
-import Model.Constants;
-import Model.GameData;
-import Model.GameState;
-import Model.UnionFindTile;
+import Model.*;
 import View.InfoBox;
 
 import java.util.Iterator;
@@ -19,8 +16,12 @@ public class GameLogicController {
     public static void newTurn() {
         if (newRoundPossible()) {
             if (!GameData.HUMAN_PLAYER_TURN) {
-                AIController.AlphaBeta(GameData.GAME_STATE, GameData.GAME_STATE.NUMBER_OF_TILES_PLACED, Long.MIN_VALUE, Long.MAX_VALUE);
-                BoardController.placeOnFreeTile(AIController.lastMove, GameData.GAME_STATE, false);
+                AIController ai = new AIController();
+                GameState gs = new GameState(GameData.GAME_STATE);
+                byte[] array = new byte[7];
+                ai.AlphaBeta(array, GameData.GAME_STATE.NUMBER_OF_TILES_PLACED, Long.MIN_VALUE, Long.MAX_VALUE);
+                Hexagon h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.bestMove);
+                BoardController.placeOnFreeTile(h, GameData.GAME_STATE, false);
                 newTurn();
             }
         } else {

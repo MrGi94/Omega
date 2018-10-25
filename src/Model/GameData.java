@@ -14,6 +14,14 @@ public class GameData implements java.io.Serializable {
     public static long ZORBIST_WHITE_MOVE = 0;
     public static GameState GAME_STATE;
     public static HashMap<Long, TTEntry> TRANSPOSITION_TABLE;
+    public HashMap<Hexagon, UnionFindTile> HEX_MAP;
+    public HashMap<Byte, Hexagon> HEX_MAP_BY_ID;
+    public HashMap<Byte, UnionFindTile> UNION_FIND_MAP;
+
+    // just store the ID so u don't have to update the objects constantly
+    public LinkedHashSet<Byte> CLUSTER_PARENT_ID_LIST;
+    public byte FREE_TILES_LEFT;
+    public byte NUMBER_OF_TILES_PLACED;
 
     private boolean human_player_first;
     private boolean human_player_turn;
