@@ -16,12 +16,10 @@ public class GameLogicController {
     public static void newTurn() {
         if (newRoundPossible()) {
             if (!GameData.HUMAN_PLAYER_TURN) {
-                AIController ai = new AIController();
-                GameState gs = new GameState(GameData.GAME_STATE);
-                byte[] array = new byte[7];
-                ai.AlphaBeta(array, GameData.GAME_STATE.NUMBER_OF_TILES_PLACED, Long.MIN_VALUE, Long.MAX_VALUE);
+                AIController ai = new AIController(GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST, GameData.GAME_STATE.FREE_TILES_LEFT, GameData.FIRST_PIECE);
+                ai.AlphaBeta(GameData.GAME_STATE.test_array, 15, Long.MIN_VALUE, Long.MAX_VALUE);
                 Hexagon h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(AIController.bestMove);
-                BoardController.placeOnFreeTile(h, GameData.GAME_STATE, false);
+                BoardController.placeOnFreeTile(h);
                 newTurn();
             }
         } else {
@@ -47,8 +45,8 @@ public class GameLogicController {
         int[] score = {1, 1};
         // score[0] white score | score[1] black score
         while (it.hasNext()) {
-            UnionFindTile uft = gs.UNION_FIND_MAP.get((byte) it.next());
-            if (uft.getTileId() % 2 == 0)
+            UnionFindTile uft = gs.UNION_FIND_MAP.get(it.next());
+            if (uft.getColor() == 1)
                 score[0] = score[0] * uft.getSize();
             else
                 score[1] = score[1] * uft.getSize();

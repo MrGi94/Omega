@@ -27,6 +27,13 @@ public class UnionFindTile implements java.io.Serializable {
         this.black_hash_value = black_hash_value;
     }
 
+    public UnionFindTile(UnionFindTile uft) {
+        this.size = uft.getSize();
+        this.parent = uft.getParent();
+        this.tile_id = uft.getTileId();
+        this.color = uft.getColor();
+    }
+
     public byte getColor() {
         return color;
     }

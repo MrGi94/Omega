@@ -9,12 +9,12 @@ public class GameState implements java.io.Serializable {
     public HashMap<Byte, Hexagon> HEX_MAP_BY_ID;
     public HashMap<Byte, UnionFindTile> UNION_FIND_MAP;
     public byte[] POSITION_ARRAY;
+    public UnionFindTile[] test_array;
 
     // just store the ID so u don't have to update the objects constantly
     public LinkedHashSet<Byte> CLUSTER_PARENT_ID_LIST;
     public byte FREE_TILES_LEFT;
     public byte NUMBER_OF_TILES_PLACED;
-    public boolean FIRST_PIECE;
 
     public GameState() {
         HEX_MAP = new HashMap<>();
@@ -23,8 +23,8 @@ public class GameState implements java.io.Serializable {
         CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>();
         FREE_TILES_LEFT = 0;
         NUMBER_OF_TILES_PLACED = 0;
-        FIRST_PIECE = true;
         POSITION_ARRAY = new byte[1-3*GameData.BOARD_SIZE+3*(GameData.BOARD_SIZE*GameData.BOARD_SIZE)];
+        test_array = new UnionFindTile[1-3*GameData.BOARD_SIZE+3*(GameData.BOARD_SIZE*GameData.BOARD_SIZE)];
     }
 
     public GameState(GameState gamestate) {
@@ -34,7 +34,7 @@ public class GameState implements java.io.Serializable {
         CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>(gamestate.CLUSTER_PARENT_ID_LIST);
         FREE_TILES_LEFT = gamestate.FREE_TILES_LEFT;
         NUMBER_OF_TILES_PLACED = gamestate.NUMBER_OF_TILES_PLACED;
-        FIRST_PIECE = gamestate.FIRST_PIECE;
         POSITION_ARRAY = gamestate.POSITION_ARRAY;
+        test_array = gamestate.test_array;
     }
 }

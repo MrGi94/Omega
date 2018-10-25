@@ -5,16 +5,18 @@ import Model.GameData;
 import Model.Hexagon;
 import Model.UnionFindTile;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 public class AIController {
 
-    public static Vector lastMoves = new Vector<>();
-    public static short bestScore = Short.MIN_VALUE;
+    private Deque lastMoves = new ArrayDeque();
+    private short bestScore = Short.MIN_VALUE;
     public static byte bestMove;
-    private boolean firstPiece = true;
+    private boolean firstPiece;
+    private LinkedHashSet<Byte> cluster_parent_id;
+    private byte free_tiles_left;
+    private boolean aiTurn = true;
+
 
 //    public static void playRandomMove() {
 //        while (!GameData.HUMAN_PLAYER_TURN) {
@@ -30,91 +32,140 @@ public class AIController {
 //        }
 //    }
 
-    private boolean isTerminalNode(byte[] position_array) {
-        return getFreeTiles(position_array).size() -1 == 0;
-    }
-
-    private short numbSuccessors(byte[] position_array) {
-        return (short) getFreeTiles(position_array).size();
-    }
-
-    private byte[] successor(byte[] position_array, short child) {
-        byte[] p = copyArray(position_array);
-        Vector moves_list = getFreeTiles(p);
-        byte move = (byte) moves_list.get(child);
-        if ((GameData.HUMAN_PLAYER_FIRST && firstPiece) || !GameData.HUMAN_PLAYER_FIRST && !firstPiece)
-            p[move] = 2;
+    public AIController(LinkedHashSet<Byte> cluster_parent_id, byte free_tiles_left, boolean firstPiece) {
+        this.cluster_parent_id = copyClusterParent(cluster_parent_id);
+        this.free_tiles_left = free_tiles_left;
+        if (firstPiece)
+            this.firstPiece = true;
         else
-            p[move] = 1;
-//        gs.CLUSTER_PARENT_ID_LIST.add(move.getTileId());
-//        unionTile();
-        lastMoves.add(move);
-        firstPiece = !firstPiece;
-        return p;
+            this.firstPiece = false;
     }
 
-    private byte[] copyArray(byte[] old_board){
-        byte[] p = new byte[old_board.length];
-        for(byte i = 0; i < p.length; i++){
-            p[i] = old_board[i];
+    private LinkedHashSet<Byte> copyClusterParent(LinkedHashSet<Byte> cluster_parent_id) {
+        LinkedHashSet<Byte> set = new LinkedHashSet();
+        Iterator it = cluster_parent_id.iterator();
+        while (it.hasNext()) {
+            set.add((byte) it.next());
+        }
+        return set;
+    }
+
+    private boolean isTerminalNode() {
+        return free_tiles_left / 4 == 0;
+    }
+
+    private short numbSuccessors() {
+        return free_tiles_left;
+    }
+
+    private UnionFindTile[] successor(UnionFindTile[] position_array, short child) {
+        UnionFindTile[] board = copyBoard(position_array);
+        Vector moves_list = getFreeTiles(board);
+        byte move = (byte) moves_list.get(child);
+        if (!((GameData.HUMAN_PLAYER_FIRST && firstPiece) || !GameData.HUMAN_PLAYER_FIRST && !firstPiece))
+            board[move].setColor((byte) 2);
+        else
+            board[move].setColor((byte) 1);
+        lastMoves.add(move);
+        cluster_parent_id.add(position_array[move].getTileId());
+        free_tiles_left--;
+        board = unionTile(board, move);
+        firstPiece = !firstPiece;
+        return board;
+    }
+
+    private UnionFindTile[] copyBoard(UnionFindTile[] old_board) {
+        UnionFindTile[] p = new UnionFindTile[old_board.length];
+        for (byte i = 0; i < p.length; i++) {
+            p[i] = new UnionFindTile(old_board[i]);
         }
         return p;
     }
 
-//    private void unionTile(byte[] position_array, UnionFindTile move) {
-//        Hexagon h = gs.HEX_MAP_BY_ID.get(move.getTileId());
-//        ArrayList<Hexagon> valid_neighbors = MapController.getValidNeighbors(h);
-//        for (Hexagon entry : valid_neighbors) {
-//            UnionFindTile uft = gs.HEX_MAP.get(entry);
-//            uft = gs.UNION_FIND_MAP.get(uft.getTileId());
-//            if (uft.getColor() == move.getColor()) {
-//                MapController.union(move.getTileId(), uft.getTileId(), gs);
-//            }
-//        }
-//        MapController.setUnionFindTile(move, gs);
-//        return move;
-//    }
+    private UnionFindTile[] unionTile(UnionFindTile[] position_array, byte move) {
+        Hexagon h = GameData.GAME_STATE.HEX_MAP_BY_ID.get(position_array[move].getTileId());
+        ArrayList<Hexagon> valid_neighbors = MapController.getValidNeighbors(h);
+        for (Hexagon entry : valid_neighbors) {
+            byte tile_id = GameData.GAME_STATE.HEX_MAP.get(entry).getTileId();
+            if (position_array[tile_id].getColor() == position_array[move].getColor()) {
+                position_array = union(move, tile_id, position_array);
+            }
+        }
+        return position_array;
+    }
 
-    private Vector getFreeTiles(byte[] position_array) {
+    private UnionFindTile[] union(byte tile_id1, byte tile_id2, UnionFindTile[] position_array) {
+        UnionFindTile root1 = find(tile_id1, position_array);
+        UnionFindTile root2 = find(tile_id2, position_array);
+        if (root1 == root2) return position_array;
+        // make root of smaller parent point to root of larger parent
+        if (root1.getParent() < root2.getParent())
+            position_array = linkUnionFindTile(root2, root1, position_array);
+        else
+            position_array = linkUnionFindTile(root1, root2, position_array);
+        return position_array;
+    }
+
+    private UnionFindTile[] linkUnionFindTile(UnionFindTile largeParent, UnionFindTile smallParent, UnionFindTile[] position_array) {
+        smallParent.setParent(largeParent.getParent());
+        largeParent.setSize((byte) (smallParent.getSize() + largeParent.getSize()));
+        position_array[largeParent.getTileId()] = largeParent;
+        position_array[smallParent.getTileId()] = smallParent;
+        cluster_parent_id.remove(smallParent.getTileId());
+        return position_array;
+    }
+
+    private UnionFindTile find(byte tile_id, UnionFindTile[] position_array) {
+        UnionFindTile uft = position_array[tile_id];
+        do {
+            uft = position_array[uft.getParent()];
+        } while (uft.getTileId() != uft.getParent());
+        return uft;
+    }
+
+    private Vector getFreeTiles(UnionFindTile[] position_array) {
         Vector free_tiles = new Vector();
-        for(byte i = 0; i < position_array.length; i++){
-            if(position_array[i] == 0)
+        for (byte i = 0; i < position_array.length; i++) {
+            if (position_array[i].getColor() == 0)
                 free_tiles.add(i);
         }
         return free_tiles;
     }
 
     /* returns the score in respect to the AI's color */
-    private short evaluate(byte[] position_array) {
-//        Iterator it = gs.CLUSTER_PARENT_ID_LIST.iterator();
-//        short[] score = {1, 1};
-//        // score[0] white score | score[1] black score
-//        while (it.hasNext()) {
-//            UnionFindTile uft = gs.UNION_FIND_MAP.get(it.next());
-//            if (uft.getTileId() % 2 == 0)
-//                score[0] = (short) (score[0] * uft.getSize());
-//            else
-//                score[1] = (short) (score[1] * uft.getSize());
-//        }
-//        if (!GameData.HUMAN_PLAYER_FIRST && GameData.FIRST_PIECE) {
-//            return score[0];
-//        } else {
-//            return score[1];
-//        }
-        return (short) Math.random();
+    private short evaluate(UnionFindTile[] position_array) {
+        Iterator it = cluster_parent_id.iterator();
+        short[] score = {1, 1};
+        // score[0] white score | score[1] black score
+        while (it.hasNext()) {
+            byte tile_id = (byte) it.next();
+            if (position_array[tile_id].getColor() == 1)
+                score[0] = (short) (score[0] * position_array[tile_id].getSize());
+            else
+                score[1] = (short) (score[1] * position_array[tile_id].getSize());
+        }
+        if ((GameData.HUMAN_PLAYER_FIRST && firstPiece) || !GameData.HUMAN_PLAYER_FIRST && !firstPiece) {// && !aiTurn) || (!GameData.HUMAN_PLAYER_FIRST && aiTurn)) {
+            return score[0]; //(short) (Math.log(score[0]) * 100);
+        } else {
+            return score[1];//(short) (Math.log(score[1]) * 100);
+        }
     }
 
-    public long AlphaBeta(byte[] position_array, int depth, long alpha, long beta) {
-        if (isTerminalNode(position_array) || depth == 0) {
+    public long AlphaBeta(UnionFindTile[] position_array, int depth, long alpha, long beta) {
+        if (isTerminalNode() || depth == 0) {
             short s = evaluate(position_array);
-            if(s >= bestScore)
-                bestMove = (byte) lastMoves.firstElement();
-            lastMoves = new Vector<>();
+            if (s >= bestScore) {
+                bestMove = (byte) lastMoves.peekFirst();
+                bestScore = s;
+            }
+            firstPiece = !firstPiece;
+            cluster_parent_id.remove(lastMoves.pollLast());
+            free_tiles_left++;
             return s;
         }
 
         long score = Long.MIN_VALUE;
-        for (short child = 0; child < numbSuccessors(position_array); child++) {
+        for (short child = 0; child < numbSuccessors(); child++) {
             long value = -AlphaBeta(successor(position_array, child), depth - 1, -beta, -alpha);
             if (value > score)
                 score = value;

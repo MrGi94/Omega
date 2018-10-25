@@ -4,7 +4,6 @@ import Controller.GameLogicController;
 import Controller.MapController;
 import Model.*;
 import Model.Point;
-import View.Board;
 import View.Menu;
 
 import java.awt.*;
@@ -40,28 +39,25 @@ public class BoardController extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         if (GameData.HUMAN_PLAYER_TURN) {
             Hexagon h = Layout.pixelToHex(new Point(e.getX(), e.getY() - 31)).hexRound();
-            placeOnFreeTile(h, GameData.GAME_STATE, false);
+            placeOnFreeTile(h);
         } else {
             GameLogicController.newTurn();
         }
     }
 
-    public static void placeOnFreeTile(Hexagon h, GameState gs, boolean isAI) {
+    public static void placeOnFreeTile(Hexagon h) {
         Byte b = determineNextMoveColor();
-        Byte val = MapController.getHexMapColor(h, gs);
+        Byte val = MapController.getHexMapColor(h);
         if (val != null && val == 0) {
-            MapController.putHexMapValue(h, b, GameData.GAME_STATE);
+            MapController.putHexMapValue(h, b);
             if (!GameData.FIRST_PIECE)
                 GameData.HUMAN_PLAYER_TURN = !GameData.HUMAN_PLAYER_TURN;
             GameData.FIRST_PIECE = !GameData.FIRST_PIECE;
             GameData.GAME_STATE.NUMBER_OF_TILES_PLACED++;
             GameData.GAME_STATE.FREE_TILES_LEFT--;
-            if(!isAI)
-                drawHexTile(h, b);
+            drawHexTile(h, b);
         }
     }
-
-
 
     private static Color getColorByByte(Byte b) {
         if (b == 0)

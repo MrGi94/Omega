@@ -21,7 +21,8 @@ public class MapController {
                 Hexagon h = new Hexagon(q, r, -q - r);
                 UnionFindTile uft = new UnionFindTile(tile_id);
                 GameData.GAME_STATE.HEX_MAP.put(h, uft);
-                setUnionFindTile(uft, GameData.GAME_STATE);
+                setUnionFindTile(uft);
+                GameData.GAME_STATE.test_array[tile_id] = new UnionFindTile(uft);
                 GameData.GAME_STATE.HEX_MAP_BY_ID.put(tile_id, h);
                 tile_id++;
             }
@@ -29,23 +30,23 @@ public class MapController {
         GameData.GAME_STATE.FREE_TILES_LEFT = (byte) GameData.GAME_STATE.HEX_MAP.size();
     }
 
-    public static void putHexMapValue(Hexagon h, Byte color, GameState gs) {
-        if (gs.HEX_MAP.containsKey(h)) {
-            UnionFindTile uft = gs.HEX_MAP.get(h);
+    public static void putHexMapValue(Hexagon h, Byte color) {
+        if (GameData.GAME_STATE.HEX_MAP.containsKey(h)) {
+            UnionFindTile uft = GameData.GAME_STATE.HEX_MAP.get(h);
             uft.setColor(color);
-            gs.HEX_MAP.put(h, uft);
-            gs.POSITION_ARRAY[uft.getTileId()] = uft.getColor();
-            gs.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
-            setUnionFindTile(uft, gs);
-            connectNeighbors(h, color, gs);
+            GameData.GAME_STATE.HEX_MAP.put(h, uft);
+            GameData.GAME_STATE.POSITION_ARRAY[uft.getTileId()] = uft.getColor();
+            GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
+            setUnionFindTile(uft);
+            connectNeighbors(h, color);
         }
     }
 
-    public static ArrayList<Hexagon> getNeighborsByColor(Hexagon hex, Byte color, GameState gs) {
+    public static ArrayList<Hexagon> getNeighborsByColor(Hexagon hex, Byte color) {
         ArrayList<Hexagon> valid_neighbors = getValidNeighbors(hex);
         ArrayList<Hexagon> valid_color_neighbors = new ArrayList<>();
         for (Hexagon entry : valid_neighbors) {
-            if (getHexMapColor(entry, gs).equals(color)) {
+            if (getHexMapColor(entry).equals(color)) {
                 valid_color_neighbors.add(entry);
             }
         }
@@ -69,10 +70,10 @@ public class MapController {
                 Math.abs(h.s) < GameData.BOARD_SIZE;
     }
 
-    public static Byte getHexMapColor(Hexagon h, GameState gs) {
+    public static Byte getHexMapColor(Hexagon h) {
         if (h == null)
             return null;
-        return gs.HEX_MAP.get(h).getColor();
+        return GameData.GAME_STATE.HEX_MAP.get(h).getColor();
     }
 
     public static Set<Map.Entry<Hexagon, UnionFindTile>> getHexMapEntrySet() {
@@ -87,52 +88,53 @@ public class MapController {
 
     /* Union Find Map Control */
 
-    public static void connectNeighbors(Hexagon h, byte color, GameState gs) {
-        ArrayList<Hexagon> neighbor_list = getNeighborsByColor(h, color, gs);
+    public static void connectNeighbors(Hexagon h, byte color) {
+        ArrayList<Hexagon> neighbor_list = getNeighborsByColor(h, color);
         for (Hexagon neighbor : neighbor_list) {
-            union(getHexMapValue(neighbor).getTileId(), gs.NUMBER_OF_TILES_PLACED, gs);
+            union(getHexMapValue(neighbor).getTileId(), GameData.GAME_STATE.HEX_MAP.get(h).getTileId());
         }
     }
 
-    public static boolean connected(byte tile_id1, byte tile_id2, GameState gs) {
-        return find(tile_id1, gs).getParent() == find(tile_id2, gs).getParent();
+    public static boolean connected(byte tile_id1, byte tile_id2) {
+        return find(tile_id1).getParent() == find(tile_id2).getParent();
     }
 
-    public static UnionFindTile getUnionFindTile(byte tile_id, GameState gs) {
-        return gs.UNION_FIND_MAP.get(tile_id);
+    public static UnionFindTile getUnionFindTile(byte tile_id) {
+        return GameData.GAME_STATE.UNION_FIND_MAP.get(tile_id);
     }
 
-    public static void setUnionFindTile(UnionFindTile uft, GameState gs) {
-        gs.UNION_FIND_MAP.put(uft.getTileId(), uft);
+    public static void setUnionFindTile(UnionFindTile uft) {
+        GameData.GAME_STATE.UNION_FIND_MAP.put(uft.getTileId(), uft);
+        GameData.GAME_STATE.test_array[uft.getTileId()] = uft;
     }
 
-    public static UnionFindTile find(byte tile_id, GameState gs) {
-        UnionFindTile uft = getUnionFindTile(tile_id, gs);
+    public static UnionFindTile find(byte tile_id) {
+        UnionFindTile uft = getUnionFindTile(tile_id);
         do {
             if (uft == null)
                 return new UnionFindTile((byte) -1);
-            uft = getUnionFindTile(uft.getParent(), gs);
+            uft = getUnionFindTile(uft.getParent());
         } while (uft.getTileId() != uft.getParent());
         return uft;
     }
 
-    public static void union(byte tile_id1, byte tile_id2, GameState gs) {
-        UnionFindTile root1 = find(tile_id1, gs);
-        UnionFindTile root2 = find(tile_id2, gs);
+    public static void union(byte tile_id1, byte tile_id2) {
+        UnionFindTile root1 = find(tile_id1);
+        UnionFindTile root2 = find(tile_id2);
         if (root1 == root2) return;
         // make root of smaller parent point to root of larger parent
         if (root1.getParent() < root2.getParent())
-            linkUnionFindTile(root2, root1, gs);
+            linkUnionFindTile(root2, root1);
         else
-            linkUnionFindTile(root1, root2, gs);
+            linkUnionFindTile(root1, root2);
     }
 
-    private static void linkUnionFindTile(UnionFindTile largeParent, UnionFindTile smallParent, GameState gs) {
+    private static void linkUnionFindTile(UnionFindTile largeParent, UnionFindTile smallParent) {
         smallParent.setParent(largeParent.getParent());
         largeParent.setSize((byte) (smallParent.getSize() + largeParent.getSize()));
-        setUnionFindTile(smallParent, gs);
-        setUnionFindTile(largeParent, gs);
-        gs.CLUSTER_PARENT_ID_LIST.remove(smallParent.getTileId());
+        setUnionFindTile(smallParent);
+        setUnionFindTile(largeParent);
+        GameData.GAME_STATE.CLUSTER_PARENT_ID_LIST.remove(smallParent.getTileId());
     }
 
 
