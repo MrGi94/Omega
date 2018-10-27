@@ -13,9 +13,8 @@ public class GameData implements java.io.Serializable {
     public static long PROCESSING_TIME = 1000000;
 
     public static HashMap<Hexagon, UnionFindTile> HEX_MAP;
+    // connects the Hex Map with the UnionFind tile ID
     public static HashMap<Byte, Hexagon> HEX_MAP_BY_ID;
-    // can delete the union_find_map, replaced by the array
-    public static HashMap<Byte, UnionFindTile> UNION_FIND_MAP;
     public static HashMap<Byte, UnionFindTile> UNION_FIND_MAP_BY_PLACEMENT;
     public static LinkedHashSet<Byte> OPEN_BOOK_CORNERS;
     public static LinkedHashSet<Byte> OPEN_BOOK_CENTER;
@@ -51,7 +50,6 @@ public class GameData implements java.io.Serializable {
         this.first_piece = FIRST_PIECE;
         this.board_size = BOARD_SIZE;
         this.hex_map = HEX_MAP;
-        this.union_find_map = UNION_FIND_MAP;
         this.cluster_parent_id_list = CLUSTER_PARENT_ID_LIST;
         this.free_tiles_left = FREE_TILES_LEFT;
         this.union_find_tile_array = UNION_FIND_TILE_ARRAY;
@@ -69,7 +67,6 @@ public class GameData implements java.io.Serializable {
         FIRST_PIECE = gd.first_piece;
         BOARD_SIZE = gd.board_size;
         HEX_MAP = gd.hex_map;
-        UNION_FIND_MAP = gd.union_find_map;
         CLUSTER_PARENT_ID_LIST = gd.cluster_parent_id_list;
         FREE_TILES_LEFT = gd.free_tiles_left;
         UNION_FIND_TILE_ARRAY = gd.union_find_tile_array;

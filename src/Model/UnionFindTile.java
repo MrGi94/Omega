@@ -15,7 +15,7 @@ public class UnionFindTile implements java.io.Serializable, Comparable<UnionFind
 
     public UnionFindTile(byte tile_id) {
         this.size = 1;
-        this.parent = tile_id;
+        this.parent = 0;
         this.tile_id = tile_id;
         this.color = 0;
         this.placement_id = 0;

@@ -11,7 +11,6 @@ public class MapController {
         // GameData.ZORBIST_WHITE_MOVE = rand.nextLong();
         GameData.HEX_MAP = new HashMap<>();
         GameData.HEX_MAP_BY_ID = new HashMap<>();
-        GameData.UNION_FIND_MAP = new HashMap<>();
         GameData.UNION_FIND_MAP_BY_PLACEMENT = new HashMap<>();
         GameData.CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>();
         GameData.OPEN_BOOK_CORNERS = new LinkedHashSet<>();
@@ -43,11 +42,12 @@ public class MapController {
     public static void putHexMapValue(Hexagon h, Byte color) {
         if (GameData.HEX_MAP.containsKey(h)) {
             UnionFindTile uft = GameData.HEX_MAP.get(h);
-            byte placement_id = (byte) (GameData.HEX_MAP.size() - GameData.FREE_TILES_LEFT / 4 * 4);
+            byte placement_id = (byte) (GameData.HEX_MAP.size() - GameData.FREE_TILES_LEFT + 1);
             uft.setColor(color);
             uft.setPlacement_id(placement_id);
+            uft.setParent(placement_id);
             GameData.HEX_MAP.put(h, uft);
-            GameData.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
+            GameData.CLUSTER_PARENT_ID_LIST.add(uft.getPlacement_id());
             setUnionFindTile(uft);
             connectNeighbors(h, color);
         }
@@ -111,7 +111,6 @@ public class MapController {
     }
 
     private static void setUnionFindTile(UnionFindTile uft) {
-        GameData.UNION_FIND_MAP.put(uft.getTileId(), uft);
         GameData.UNION_FIND_MAP_BY_PLACEMENT.put(uft.getPlacement_id(), uft);
         GameData.UNION_FIND_TILE_ARRAY[uft.getTileId()] = uft;
     }
@@ -142,28 +141,27 @@ public class MapController {
         largeParent.setSize((byte) (smallParent.getSize() + largeParent.getSize()));
         setUnionFindTile(smallParent);
         setUnionFindTile(largeParent);
-        GameData.CLUSTER_PARENT_ID_LIST.remove(smallParent.getTileId());
+        GameData.CLUSTER_PARENT_ID_LIST.remove(smallParent.getPlacement_id());
     }
 
     public static void disconnectTile(Hexagon h) {
         UnionFindTile uft = GameData.HEX_MAP.get(h);
-        uft.setColor((byte) 0);
+        GameData.CLUSTER_PARENT_ID_LIST.remove(uft.getPlacement_id());
+
+        for (Map.Entry<Byte, UnionFindTile> entry : GameData.UNION_FIND_MAP_BY_PLACEMENT.entrySet()) {
+            if (entry.getValue().getParent() == uft.getPlacement_id()) {
+                // disconnect this tile
+                entry.getValue().setParent(entry.getValue().getPlacement_id());
+                setUnionFindTile(entry.getValue());
+                GameData.CLUSTER_PARENT_ID_LIST.add(entry.getValue().getPlacement_id());
+            }
+        }
+
+        uft = new UnionFindTile(uft.getTileId());
         setUnionFindTile(uft);
-        GameData.CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>();
-        for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
-            entry.getValue().setSize((byte) 1);
-            entry.getValue().setParent(entry.getValue().getTileId());
-            setUnionFindTile(entry.getValue());
-            if (entry.getValue().getColor() != 0) {
-                GameData.CLUSTER_PARENT_ID_LIST.add(entry.getValue().getParent());
-            }
-        }
-        for (Map.Entry<Hexagon, UnionFindTile> entry : MapController.getHexMapEntrySet()) {
-            if (entry.getValue().getColor() != 0) {
-                connectNeighbors(entry.getKey(), entry.getValue().getColor());
-            }
-        }
+        GameData.HEX_MAP.put(h, uft);
     }
+    
 
     /* Transposition Table Control */
 

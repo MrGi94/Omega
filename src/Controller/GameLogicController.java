@@ -32,16 +32,16 @@ public class GameLogicController {
     public static void newTurn() {
         if (!newTurnPossible())
             InfoBox.infoBox(generateScoreMessage(), Constants.INFO_BOX_GAME_END_TITLE);
-
-        if (!GameData.HUMAN_PLAYER_TURN) {
-            AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
-            byte[] move_array = ai.OmegaPrime(1);
-            Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
-            BoardController.placeOnFreeTile(h);
-            h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
-            BoardController.placeOnFreeTile(h);
-            newTurn();
-        }
+        GameData.HUMAN_PLAYER_TURN = true;
+//        if (!GameData.HUMAN_PLAYER_TURN) {
+//            AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
+//            byte[] move_array = ai.OmegaPrime(1);
+//            Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
+//            BoardController.placeOnFreeTile(h);
+//            h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
+//            BoardController.placeOnFreeTile(h);
+//            newTurn();
+//        }
     }
 
     private static String generateScoreMessage() {
@@ -62,7 +62,7 @@ public class GameLogicController {
         int[] score = {1, 1};
         // score[0] white score | score[1] black score
         while (it.hasNext()) {
-            UnionFindTile uft = GameData.UNION_FIND_MAP.get(it.next());
+            UnionFindTile uft = GameData.UNION_FIND_MAP_BY_PLACEMENT.get(it.next());
             if (uft.getColor() == 1)
                 score[0] = score[0] * uft.getSize();
             else
