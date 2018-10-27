@@ -9,11 +9,16 @@ public class GameData implements java.io.Serializable {
     public static boolean HUMAN_PLAYER_TURN = true;
     public static boolean FIRST_PIECE = true;
     public static int BOARD_SIZE = 5;
-    public static byte FREE_TILES_LEFT;
+    public static short FREE_TILES_LEFT;
+    public static long PROCESSING_TIME = 1000000;
 
     public static HashMap<Hexagon, UnionFindTile> HEX_MAP;
     public static HashMap<Byte, Hexagon> HEX_MAP_BY_ID;
+    // can delete the union_find_map, replaced by the array
     public static HashMap<Byte, UnionFindTile> UNION_FIND_MAP;
+    public static HashMap<Byte, UnionFindTile> UNION_FIND_MAP_BY_PLACEMENT;
+    public static LinkedHashSet<Byte> OPEN_BOOK_CORNERS;
+    public static LinkedHashSet<Byte> OPEN_BOOK_CENTER;
     public static UnionFindTile[] UNION_FIND_TILE_ARRAY;
     public static Stack<Hexagon> HEX_STACK = new Stack<>();
     // just store the ID so u don't have to update the objects constantly
@@ -26,12 +31,14 @@ public class GameData implements java.io.Serializable {
     private boolean human_player_turn;
     private boolean first_piece;
     private int board_size;
-    private byte free_tiles_left;
+    private short free_tiles_left;
+    private long processing_time;
 
     private HashMap<Hexagon, UnionFindTile> hex_map;
     private HashMap<Byte, Hexagon> hex_map_by_id;
     private UnionFindTile[] union_find_tile_array;
     private HashMap<Byte, UnionFindTile> union_find_map;
+    private HashMap<Byte, UnionFindTile> union_find_map_by_placement;
     private LinkedHashSet<Byte> cluster_parent_id_list;
     private Stack<Hexagon> hex_stack;
 
@@ -50,6 +57,8 @@ public class GameData implements java.io.Serializable {
         this.union_find_tile_array = UNION_FIND_TILE_ARRAY;
         this.hex_stack = HEX_STACK;
         this.hex_map_by_id = HEX_MAP_BY_ID;
+        this.processing_time = PROCESSING_TIME;
+        this.union_find_map_by_placement = UNION_FIND_MAP_BY_PLACEMENT;
 //        this.zorbist_white_move = ZORBIST_WHITE_MOVE;
 //        this.transposition_table = TRANSPOSITION_TABLE;
     }
@@ -66,6 +75,8 @@ public class GameData implements java.io.Serializable {
         UNION_FIND_TILE_ARRAY = gd.union_find_tile_array;
         HEX_STACK = gd.hex_stack;
         HEX_MAP_BY_ID = gd.hex_map_by_id;
+        PROCESSING_TIME = gd.processing_time;
+        UNION_FIND_MAP_BY_PLACEMENT = gd.union_find_map_by_placement;
 //        ZORBIST_WHITE_MOVE = gd.zorbist_white_move;
 //        TRANSPOSITION_TABLE = gd.transposition_table;
     }

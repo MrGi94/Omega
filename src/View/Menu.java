@@ -54,6 +54,10 @@ public class Menu extends JFrame {
         menuItem.addActionListener(menuController);
         menu.add(menuItem);
         menuBar.add(menu);
+        menuItem = new JMenuItem(Constants.MENU_ITEM_TEST_AI);
+        menuItem.addActionListener(menuController);
+        menu.add(menuItem);
+        menuBar.add(menu);
         return menuBar;
     }
 

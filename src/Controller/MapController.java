@@ -12,7 +12,10 @@ public class MapController {
         GameData.HEX_MAP = new HashMap<>();
         GameData.HEX_MAP_BY_ID = new HashMap<>();
         GameData.UNION_FIND_MAP = new HashMap<>();
+        GameData.UNION_FIND_MAP_BY_PLACEMENT = new HashMap<>();
         GameData.CLUSTER_PARENT_ID_LIST = new LinkedHashSet<>();
+        GameData.OPEN_BOOK_CORNERS = new LinkedHashSet<>();
+        GameData.OPEN_BOOK_CENTER = new LinkedHashSet<>();
         GameData.UNION_FIND_TILE_ARRAY = new UnionFindTile[1 - 3 * GameData.BOARD_SIZE + 3 * (GameData.BOARD_SIZE * GameData.BOARD_SIZE)];
         byte tile_id = 0;
         map_radius--;
@@ -26,6 +29,11 @@ public class MapController {
                 setUnionFindTile(uft);
                 GameData.UNION_FIND_TILE_ARRAY[tile_id] = new UnionFindTile(uft);
                 GameData.HEX_MAP_BY_ID.put(tile_id, h);
+                int sum = Math.abs(q) + Math.abs(r) + Math.abs(-q - r);
+                if ((q == 0 || r == 0 || (-q - r) == 0) && sum == map_radius * 2)
+                    GameData.OPEN_BOOK_CORNERS.add(tile_id);
+                if (GameData.BOARD_SIZE > 3 && (sum == 0 || sum == 2))
+                    GameData.OPEN_BOOK_CENTER.add(tile_id);
                 tile_id++;
             }
         }
@@ -35,7 +43,9 @@ public class MapController {
     public static void putHexMapValue(Hexagon h, Byte color) {
         if (GameData.HEX_MAP.containsKey(h)) {
             UnionFindTile uft = GameData.HEX_MAP.get(h);
+            byte placement_id = (byte) (GameData.HEX_MAP.size() - GameData.FREE_TILES_LEFT / 4 * 4);
             uft.setColor(color);
+            uft.setPlacement_id(placement_id);
             GameData.HEX_MAP.put(h, uft);
             GameData.CLUSTER_PARENT_ID_LIST.add(uft.getParent());
             setUnionFindTile(uft);
@@ -92,32 +102,33 @@ public class MapController {
     private static void connectNeighbors(Hexagon h, byte color) {
         ArrayList<Hexagon> neighbor_list = getNeighborsByColor(h, color);
         for (Hexagon neighbor : neighbor_list) {
-            union(getHexMapValue(neighbor).getTileId(), GameData.HEX_MAP.get(h).getTileId());
+            union(getHexMapValue(neighbor).getPlacement_id(), GameData.HEX_MAP.get(h).getPlacement_id());
         }
     }
 
-    private static UnionFindTile getUnionFindTile(byte tile_id) {
-        return GameData.UNION_FIND_MAP.get(tile_id);
+    private static UnionFindTile getUnionFindTileByPlacement(byte placement_id) {
+        return GameData.UNION_FIND_MAP_BY_PLACEMENT.get(placement_id);
     }
 
     private static void setUnionFindTile(UnionFindTile uft) {
         GameData.UNION_FIND_MAP.put(uft.getTileId(), uft);
+        GameData.UNION_FIND_MAP_BY_PLACEMENT.put(uft.getPlacement_id(), uft);
         GameData.UNION_FIND_TILE_ARRAY[uft.getTileId()] = uft;
     }
 
-    private static UnionFindTile find(byte tile_id) {
-        UnionFindTile uft = getUnionFindTile(tile_id);
+    private static UnionFindTile find(byte placement_id) {
+        UnionFindTile uft = getUnionFindTileByPlacement(placement_id);
         do {
             if (uft == null)
                 return new UnionFindTile((byte) -1);
-            uft = getUnionFindTile(uft.getParent());
-        } while (uft.getTileId() != uft.getParent());
+            uft = getUnionFindTileByPlacement(uft.getParent());
+        } while (uft.getPlacement_id() != uft.getParent());
         return uft;
     }
 
-    private static void union(byte tile_id1, byte tile_id2) {
-        UnionFindTile root1 = find(tile_id1);
-        UnionFindTile root2 = find(tile_id2);
+    private static void union(byte placement_id1, byte placement_id2) {
+        UnionFindTile root1 = find(placement_id1);
+        UnionFindTile root2 = find(placement_id2);
         if (root1 == root2) return;
         // make root of smaller parent point to root of larger parent
         if (root1.getParent() < root2.getParent())

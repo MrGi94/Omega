@@ -23,6 +23,7 @@ public class Constants {
     public static final String INFO_BOX_DESERIALIZE_TITLE_SUCCESS = "Loaded game...";
     public static final String INFO_BOX_GAME_END_TITLE = "Game has finished";
     public static final String SERIALIZE_PATH = new File("").getAbsolutePath() + "/game_states/omega_game.ser";
+    public static final String MENU_ITEM_TEST_AI = "Test AI";
 
     public static final Orientation BOARD_ORIENTATION = new Orientation(Math.sqrt(3.0), Math.sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, Math.sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5);
     public static final Point TILE_SIZE = new Point(25, 25);
