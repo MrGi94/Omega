@@ -156,12 +156,11 @@ public class MapController {
                 GameData.CLUSTER_PARENT_ID_LIST.add(entry.getValue().getPlacement_id());
             }
         }
-
         uft = new UnionFindTile(uft.getTileId());
         setUnionFindTile(uft);
         GameData.HEX_MAP.put(h, uft);
     }
-    
+
 
     /* Transposition Table Control */
 

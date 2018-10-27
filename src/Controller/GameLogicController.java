@@ -15,8 +15,8 @@ public class GameLogicController {
 
     public static void testAIPlayer() {
         while (newTurnPossible()) {
+            AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
             if (!GameData.HUMAN_PLAYER_TURN) {
-                AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
                 byte[] move_array = ai.OmegaPrime(1);
                 Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
                 BoardController.placeOnFreeTile(h);
@@ -24,7 +24,13 @@ public class GameLogicController {
                 BoardController.placeOnFreeTile(h);
                 newTurn();
             } else {
-                AIController.playRandomMove();
+                byte move = ai.playRandomMove();
+                Hexagon h = GameData.HEX_MAP_BY_ID.get(move);
+                BoardController.placeOnFreeTile(h);
+                move = ai.playRandomMove();
+                h = GameData.HEX_MAP_BY_ID.get(move);
+                BoardController.placeOnFreeTile(h);
+                newTurn();
             }
         }
     }
@@ -32,16 +38,15 @@ public class GameLogicController {
     public static void newTurn() {
         if (!newTurnPossible())
             InfoBox.infoBox(generateScoreMessage(), Constants.INFO_BOX_GAME_END_TITLE);
-        GameData.HUMAN_PLAYER_TURN = true;
-//        if (!GameData.HUMAN_PLAYER_TURN) {
-//            AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
-//            byte[] move_array = ai.OmegaPrime(1);
-//            Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
-//            BoardController.placeOnFreeTile(h);
-//            h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
-//            BoardController.placeOnFreeTile(h);
-//            newTurn();
-//        }
+        if (!GameData.HUMAN_PLAYER_TURN) {
+            AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
+            byte[] move_array = ai.OmegaPrime(1);
+            Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
+            BoardController.placeOnFreeTile(h);
+            h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
+            BoardController.placeOnFreeTile(h);
+            newTurn();
+        }
     }
 
     private static String generateScoreMessage() {
