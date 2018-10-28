@@ -8,6 +8,7 @@ import Model.TranspositionTable.TTEntry;
 import Model.UnionFindTile;
 
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 public class AIController {
     private ArrayList lastMoves;
@@ -148,13 +149,15 @@ public class AIController {
 //                    NegaMax(entry.getBoard(), entry.getDepth(), Short.MIN_VALUE, Short.MAX_VALUE);
 //                } else {
                 NegaMax(GameData.UNION_FIND_TILE_ARRAY, d, Short.MIN_VALUE, Short.MAX_VALUE);
+                System.out.println("---------- depth " + d + " -------------");
                 System.out.println("History size is: " + history.size());
                 System.out.println("Black counter is: " + counterBlack);
                 System.out.println("White counter is: " + counterWhite);
                 System.out.println("Black bad is " + counterBlackBad + " White bad is " + counterWhiteBad);
                 System.out.println("Black breaking " + breakBlack + " White breaking " + breakWhite);
 //                }
-            } catch (TimeUpException e) {
+            } catch (TimeoutException e) {
+                System.out.println("TimeoutException detected");
                 return getBestHistoryEntry().getBestMove();
             }
         }
@@ -256,11 +259,10 @@ public class AIController {
         history.add(new TTEntry(index, bestValue, moves, board));
     }
 
-    private short NegaMax(UnionFindTile[] position_array, byte depth, short alpha, short beta) throws TimeUpException {
+    private short NegaMax(UnionFindTile[] position_array, byte depth, short alpha, short beta) throws TimeoutException {
+        if ((System.currentTimeMillis() - starting_time) > processing_time_per_turn)
+            throw new TimeoutException();
         if (isTerminalNode() || depth == 0) {
-            long i = System.currentTimeMillis() - starting_time;
-            if ((System.currentTimeMillis() - starting_time) > processing_time_per_turn)
-                throw new TimeUpException();
             return evaluatePrime(position_array);
         }
 
@@ -272,77 +274,27 @@ public class AIController {
         short score = Short.MIN_VALUE;
         byte d = --depth;
         UnionFindTile[] board;
-        if (firstPiece && maximizeAI) {
-            for (short child = 0; child < numbSuccessorsPrime(); child++) {
-                if (counterBlack == 0)
-                    System.out.println("First Piece Maximizing: numbSuccessors = " + numbSuccessorsPrime());
-                counterBlack++;
-                // place first stone and maximize second turn as well
-                board = successorPrime(position_array, child, true);
-                short value = NegaMax(board, d, alpha, beta);
-                position_array = unmakeMove(position_array);
-                if (value > score)
-                    score = value;
-                if (score > alpha)
-                    alpha = score;
-                if (score > beta) {
-                    breakBlack++;
-                    break;
-                }
-            }
-            return score;
-        } else if (!firstPiece && maximizeAI) {
-            // place second stone and minimize first opponents turn
-            for (short child = 0; child < numbSuccessorsPrime(); child++) {
-                if (counterWhite == 0)
-                    System.out.println("Second Piece Maximizing: numbSuccessors = " + numbSuccessorsPrime());
-                counterWhite++;
-                board = successorPrime(position_array, child, false);
-                short value = NegaMax(board, d, alpha, beta);
+        for (short child = 0; child < numbSuccessorsPrime(); child++) {
+            // place first stone and maximize second turn as well
+            board = successorPrime(position_array, child, firstPiece);
+            short value;
+            if (maximizeAI)
+                value = NegaMax(board, d, alpha, beta);
+            else
+                value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
+            if (!firstPiece)
                 storeMove(board, value);
-                position_array = unmakeMove(position_array);
-                if (value > score)
-                    score = value;
-                if (score > alpha)
-                    alpha = score;
-                if (score > beta) {
-                    breakWhite++;
-                    break;
-                }
-            }
-            return score;
-        } else if (firstPiece) {
-            // place opponents first stone and minimize second turn as well
-            for (short child = 0; child < numbSuccessorsPrime(); child++) {
-                counterBlackBad++;
-                board = successorPrime(position_array, child, true);
-                short value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
-                position_array = unmakeMove(position_array);
-                if (value > score)
-                    score = value;
-                if (score > alpha)
-                    alpha = score;
-                if (score > beta)
-                    break;
-            }
-            return score;
-        } else {
-            // place opponents second stone and maximize first AI turn
-            for (short child = 0; child < numbSuccessorsPrime(); child++) {
-                counterWhiteBad++;
-                board = successorPrime(position_array, child, false);
-                short value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
-                position_array = unmakeMove(position_array);
-                if (value > score)
-                    score = value;
-                if (score > alpha)
-                    alpha = score;
-                if (score > beta)
-                    break;
-            }
-            return score;
+            position_array = unmakeMove(position_array);
+            if (value > score)
+                score = value;
+            if (score > alpha)
+                alpha = score;
+            if (score > beta)
+                break;
         }
+        return score;
     }
+
 
 
     /* do the TT lockup and return the respective entry */
@@ -424,10 +376,4 @@ public class AIController {
 //    and the new larger group formed by adding the new piece is multiplied back into the score.
 //    That way, a full board scan is not required.
 
-}
-
-class TimeUpException extends Exception {
-
-    TimeUpException() {
-    }
 }

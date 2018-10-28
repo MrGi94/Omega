@@ -10,7 +10,7 @@ public class GameData implements java.io.Serializable {
     public static boolean FIRST_PIECE = true;
     public static int BOARD_SIZE = 5;
     public static short FREE_TILES_LEFT;
-    public static long PROCESSING_TIME = 1000000;
+    public static long PROCESSING_TIME = 100000;
 
     public static HashMap<Hexagon, UnionFindTile> HEX_MAP;
     // connects the Hex Map with the UnionFind tile ID

@@ -17,7 +17,7 @@ public class GameLogicController {
         while (newTurnPossible()) {
             if (!GameData.HUMAN_PLAYER_TURN) {
                 AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
-                byte[] move_array = ai.OmegaPrime(2);
+                byte[] move_array = ai.OmegaPrime(1);
                 Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
                 BoardController.placeOnFreeTile(h);
                 h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
@@ -38,9 +38,9 @@ public class GameLogicController {
     public static void newTurn() {
         if (!newTurnPossible())
             InfoBox.infoBox(generateScoreMessage(), Constants.INFO_BOX_GAME_END_TITLE);
-        if (!GameData.HUMAN_PLAYER_TURN) {
+        else if (!GameData.HUMAN_PLAYER_TURN) {
             AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
-            byte[] move_array = ai.OmegaPrime(2);
+            byte[] move_array = ai.OmegaPrime(3);
             Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
             BoardController.placeOnFreeTile(h);
             h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
