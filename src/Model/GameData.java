@@ -23,7 +23,6 @@ public class GameData implements java.io.Serializable {
     // just store the ID so u don't have to update the objects constantly
     public static LinkedHashSet<Byte> CLUSTER_PARENT_ID_LIST;
 
-//    public static long ZORBIST_WHITE_MOVE = 0;
 //    public static HashMap<Long, TTEntry> TRANSPOSITION_TABLE;
 
     private boolean human_player_first;
@@ -39,8 +38,9 @@ public class GameData implements java.io.Serializable {
     private HashMap<Byte, UnionFindTile> union_find_map_by_placement;
     private LinkedHashSet<Byte> cluster_parent_id_list;
     private Stack<Hexagon> hex_stack;
+    //private LinkedHashSet<Byte> open_book_center;
+    //private LinkedHashSet<Byte> open_book_corners;
 
-//    private long zorbist_white_move;
 //    private HashMap<Long, TTEntry> transposition_table;
 
     public GameData() {
@@ -56,7 +56,8 @@ public class GameData implements java.io.Serializable {
         this.hex_map_by_id = HEX_MAP_BY_ID;
         this.processing_time = PROCESSING_TIME;
         this.union_find_map_by_placement = UNION_FIND_MAP_BY_PLACEMENT;
-//        this.zorbist_white_move = ZORBIST_WHITE_MOVE;
+        //this.open_book_center = OPEN_BOOK_CENTER;
+        // this.open_book_corners = OPEN_BOOK_CORNERS;
 //        this.transposition_table = TRANSPOSITION_TABLE;
     }
 
@@ -73,7 +74,8 @@ public class GameData implements java.io.Serializable {
         HEX_MAP_BY_ID = gd.hex_map_by_id;
         PROCESSING_TIME = gd.processing_time;
         UNION_FIND_MAP_BY_PLACEMENT = gd.union_find_map_by_placement;
-//        ZORBIST_WHITE_MOVE = gd.zorbist_white_move;
+        // OPEN_BOOK_CORNERS = gd.open_book_corners;
+        //OPEN_BOOK_CENTER = gd.open_book_center;
 //        TRANSPOSITION_TABLE = gd.transposition_table;
     }
 }

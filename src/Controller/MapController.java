@@ -8,7 +8,6 @@ public class MapController {
 
     public static void generateHexMap(int map_radius) {
         // GameData.TRANSPOSITION_TABLE = new HashMap<>();
-        // GameData.ZORBIST_WHITE_MOVE = rand.nextLong();
         GameData.HEX_MAP = new HashMap<>();
         GameData.HEX_MAP_BY_ID = new HashMap<>();
         GameData.UNION_FIND_MAP_BY_PLACEMENT = new HashMap<>();
