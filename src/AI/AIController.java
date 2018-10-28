@@ -16,12 +16,7 @@ public class AIController {
     private short free_tiles_left;
     private long starting_time;
     private List<TTEntry> history;
-    private int counterBlack;
-    private int counterWhite;
-    private int counterBlackBad;
-    private int counterWhiteBad;
-    private int breakBlack;
-    private int breakWhite;
+    private int pruning;
     // divide total thinking time
     private long processing_time_per_turn;
 
@@ -39,6 +34,7 @@ public class AIController {
         this.lastMoves = new ArrayList();
         // to match the depth index
         this.lastMoves.add(0);
+        this.pruning = 0;
         this.history = new ArrayList<>();
     }
 
@@ -81,24 +77,6 @@ public class AIController {
 
     private long numbSuccessorsPrime() {
         return free_tiles_left;
-    }
-
-    private short evaluatePrime(UnionFindTile[] position_array) {
-        Iterator it = cluster_parent_id.iterator();
-        short[] score = {1, 1};
-        // score[0] white score | score[1] black score
-        while (it.hasNext()) {
-            byte tile_id = getUnionFindTileByPlacement((byte) it.next(), position_array).getTileId();
-            if (position_array[tile_id].getColor() == 1)
-                score[0] = (short) (score[0] * position_array[tile_id].getSize());
-            else
-                score[1] = (short) (score[1] * position_array[tile_id].getSize());
-        }
-        if (GameData.HUMAN_PLAYER_FIRST)
-            return (short) (score[1] - score[0]);
-        else
-            return (short) (score[0] - score[1]);
-//        return (long) ((Math.log(score[0]) * 100) - (Math.log(score[1]) * 100));
     }
 
     private byte[] getOpenBookMove() {
@@ -151,10 +129,7 @@ public class AIController {
                 NegaMax(GameData.UNION_FIND_TILE_ARRAY, d, Short.MIN_VALUE, Short.MAX_VALUE);
                 System.out.println("---------- depth " + d + " -------------");
                 System.out.println("History size is: " + history.size());
-                System.out.println("Black counter is: " + counterBlack);
-                System.out.println("White counter is: " + counterWhite);
-                System.out.println("Black bad is " + counterBlackBad + " White bad is " + counterWhiteBad);
-                System.out.println("Black breaking " + breakBlack + " White breaking " + breakWhite);
+                System.out.println("Pruning: " + pruning);
 //                }
             } catch (TimeoutException e) {
                 System.out.println("TimeoutException detected");
@@ -254,12 +229,47 @@ public class AIController {
     private void storeMove(UnionFindTile[] board, short bestValue) {
         byte index = (byte) (lastMoves.size() - 1);
         byte[] moves = new byte[2];
-        moves[1] = (byte) lastMoves.get(index);
-        moves[0] = (byte) lastMoves.get(index - 1);
+//        moves[1] = (byte) lastMoves.get(index);
+//        moves[0] = (byte) lastMoves.get(index - 1);
+        moves[0] = (byte) lastMoves.get(1);
+        moves[1] = (byte) lastMoves.get(2);
         history.add(new TTEntry(index, bestValue, moves, board));
     }
 
+    private short evaluatePrime(UnionFindTile[] position_array) {
+        Iterator it = cluster_parent_id.iterator();
+        short[] score = {1, 1};
+        // score[0] white score | score[1] black score
+        while (it.hasNext()) {
+            byte tile_id = getUnionFindTileByPlacement((byte) it.next(), position_array).getTileId();
+            if (position_array[tile_id].getColor() == 1)
+                score[0] = (short) (score[0] * position_array[tile_id].getSize());
+            else
+                score[1] = (short) (score[1] * position_array[tile_id].getSize());
+        }
+        if (GameData.HUMAN_PLAYER_FIRST)
+            return (short) (score[1] - score[0]);
+        else
+            return (short) (score[1] - score[0]);
+//        return (long) ((Math.log(score[0]) * 100) - (Math.log(score[1]) * 100));
+    }
+
     private short NegaMax(UnionFindTile[] position_array, byte depth, short alpha, short beta) throws TimeoutException {
+        int olda = alpha; /* save original alpha value */
+        TTEntry n = retrieve(position_array); /* Transposition-table lookup */
+        if (n.getDepth() >= depth) {
+            if (n.getFlag() == Constants.FLAG.EXACT) {
+                return n.getValue();
+            } else if (n.getFlag() == Constants.FLAG.LOWERBOUND) {
+                alpha = (short) Math.max(alpha, n.getValue());
+            } else if (n.getFlag() == Constants.FLAG.UPPERBOUND) {
+                beta = (short) Math.min(beta, n.getValue());
+            }
+            if (alpha >= beta) {
+                return n.getValue();
+            }
+        }
+
         if ((System.currentTimeMillis() - starting_time) > processing_time_per_turn)
             throw new TimeoutException();
         if (isTerminalNode() || depth == 0) {
@@ -282,15 +292,17 @@ public class AIController {
                 value = NegaMax(board, d, alpha, beta);
             else
                 value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
-            if (!firstPiece)
+            if (!firstPiece && maximizeAI)
                 storeMove(board, value);
             position_array = unmakeMove(position_array);
             if (value > score)
                 score = value;
             if (score > alpha)
                 alpha = score;
-            if (score > beta)
+            if (score > beta) {
+                pruning++;
                 break;
+            }
         }
         return score;
     }

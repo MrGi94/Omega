@@ -1,10 +1,11 @@
 package Model.TranspositionTable;
 
+import Model.Constants;
 import Model.UnionFindTile;
 
 public class TTEntry implements Comparable<TTEntry> {
 
-    //    private Constants.FLAG flag;
+    private Constants.FLAG flag;
     private byte depth;
     private short value;
     private byte[] bestMove;
@@ -29,17 +30,18 @@ public class TTEntry implements Comparable<TTEntry> {
         }
         return result;
     }
-//
-//    public TTEntry(Constants.FLAG flag, byte depth, short value, short bestMove){
-//        this.flag = flag;
-//        this.depth = depth;
-//        this.value = value;
-//        this.bestMove = bestMove;
-//    }
-//
-//    public Constants.FLAG getFlag() {
-//        return flag;
-//    }
+
+    public TTEntry(Constants.FLAG flag, byte depth, short value, byte[] bestMove, UnionFindTile[] board) {
+        this.flag = flag;
+        this.depth = depth;
+        this.value = value;
+        this.bestMove = bestMove;
+        this.board = board;
+    }
+
+public Constants.FLAG getFlag() {
+    return flag;
+}
 
     public byte getDepth() {
         return depth;

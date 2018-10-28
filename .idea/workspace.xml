@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="11c7a9f0-012b-4197-9865-387472dc704a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/out/production/Omega/AI/AIController.class" afterPath="$PROJECT_DIR$/out/production/Omega/AI/AIController.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Omega/AI/TimeUpException.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/out/production/Omega/Controller/GUI/BoardController.class" afterPath="$PROJECT_DIR$/out/production/Omega/Controller/GUI/BoardController.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Omega/Controller/SerializeBoard.class" afterPath="$PROJECT_DIR$/out/production/Omega/Controller/SerializeBoard.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Omega/Model/GameData.class" afterPath="$PROJECT_DIR$/out/production/Omega/Model/GameData.class" />
       <change beforePath="$PROJECT_DIR$/src/AI/AIController.java" afterPath="$PROJECT_DIR$/src/AI/AIController.java" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/GameLogicController.java" afterPath="$PROJECT_DIR$/src/Controller/GameLogicController.java" />
-      <change beforePath="$PROJECT_DIR$/src/Model/GameData.java" afterPath="$PROJECT_DIR$/src/Model/GameData.java" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Constants.java" afterPath="$PROJECT_DIR$/src/Model/Constants.java" />
+      <change beforePath="$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java" afterPath="$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,17 +19,27 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AIController.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AIController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/AI/AIController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="436">
-              <caret line="278" column="20" lean-forward="true" selection-start-line="278" selection-start-column="20" selection-end-line="278" selection-end-column="20" />
+            <state relative-caret-position="323">
+              <caret line="270" column="9" lean-forward="true" selection-start-line="270" selection-start-column="9" selection-end-line="270" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1743#1749#0" expanded="true" />
-                <element signature="e#2816#2817#0" expanded="true" />
-                <element signature="e#2854#2855#0" expanded="true" />
+                <element signature="e#1612#1618#0" expanded="true" />
+                <element signature="e#2685#2686#0" expanded="true" />
+                <element signature="e#2723#2724#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Model/Constants.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="303">
+              <caret line="39" column="4" lean-forward="false" selection-start-line="39" selection-start-column="4" selection-end-line="39" selection-end-column="4" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -52,22 +56,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TTEntry.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="TTEntry.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-210">
-              <caret line="26" column="14" lean-forward="true" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
+            <state relative-caret-position="419">
+              <caret line="38" column="27" lean-forward="false" selection-start-line="38" selection-start-column="27" selection-end-line="38" selection-end-column="27" />
               <folding>
-                <element signature="e#519#520#0" expanded="true" />
-                <element signature="e#559#560#0" expanded="true" />
-                <element signature="e#1111#1112#0" expanded="true" />
-                <element signature="e#1139#1140#0" expanded="true" />
-                <element signature="e#1170#1171#0" expanded="true" />
-                <element signature="e#1198#1199#0" expanded="true" />
-                <element signature="e#1233#1234#0" expanded="true" />
-                <element signature="e#1264#1265#0" expanded="true" />
-                <element signature="e#1305#1306#0" expanded="true" />
-                <element signature="e#1333#1334#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#537#538#0" expanded="true" />
+                <element signature="e#577#578#0" expanded="true" />
+                <element signature="e#1099#1100#0" expanded="true" />
+                <element signature="e#1118#1119#0" expanded="true" />
+                <element signature="e#1148#1149#0" expanded="true" />
+                <element signature="e#1176#1177#0" expanded="true" />
+                <element signature="e#1207#1208#0" expanded="true" />
+                <element signature="e#1235#1236#0" expanded="true" />
+                <element signature="e#1270#1271#0" expanded="true" />
+                <element signature="e#1301#1302#0" expanded="true" />
+                <element signature="e#1342#1343#0" expanded="true" />
+                <element signature="e#1370#1371#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -76,8 +83,8 @@
       <file leaf-file-name="GameLogicController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Controller/GameLogicController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state relative-caret-position="306">
+              <caret line="23" column="51" lean-forward="true" selection-start-line="23" selection-start-column="51" selection-end-line="23" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -168,12 +175,10 @@
         <option value="$PROJECT_DIR$/src/Model/Orientation.java" />
         <option value="$PROJECT_DIR$/src/Model/FractionalHex.java" />
         <option value="$PROJECT_DIR$/src/Model/Hexagon.java" />
-        <option value="$PROJECT_DIR$/src/Model/Constants.java" />
         <option value="$PROJECT_DIR$/src/View/Menu.java" />
         <option value="$PROJECT_DIR$/src/Controller/GUI/MenuController.java" />
         <option value="$PROJECT_DIR$/src/Model/UnionFindTile.java" />
         <option value="$PROJECT_DIR$/src/Controller/MapController.java" />
-        <option value="$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java" />
         <option value="$PROJECT_DIR$/src/Model/TranspositionTable/SortTTEntry.java" />
         <option value="$PROJECT_DIR$/src/RunDemo.java" />
         <option value="$PROJECT_DIR$/src/Controller/GUI/BoardController.java" />
@@ -181,12 +186,14 @@
         <option value="$PROJECT_DIR$/src/Model/GameData.java" />
         <option value="$PROJECT_DIR$/src/Controller/GameLogicController.java" />
         <option value="$PROJECT_DIR$/src/AI/AIController.java" />
+        <option value="$PROJECT_DIR$/src/Model/Constants.java" />
+        <option value="$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="5" />
-    <option name="width" value="1595" />
+    <option name="x" value="469" />
+    <option name="width" value="1131" />
     <option name="height" value="860" />
   </component>
   <component name="ProjectView">
@@ -403,7 +410,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="5" y="0" width="1595" height="860" extended-state="0" />
+    <frame x="469" y="0" width="1131" height="860" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -419,7 +426,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12899023" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18487395" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -443,19 +450,19 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/AI/AIController.java</url>
-          <line>126</line>
+          <line>104</line>
           <properties />
           <option name="timeStamp" value="203" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/AI/AIController.java</url>
-          <line>144</line>
+          <line>122</line>
           <properties />
           <option name="timeStamp" value="205" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/AI/AIController.java</url>
-          <line>138</line>
+          <line>116</line>
           <properties />
           <option name="timeStamp" value="206" />
         </line-breakpoint>
@@ -748,14 +755,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Model/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="27" column="52" lean-forward="true" selection-start-line="27" selection-start-column="52" selection-end-line="27" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Model/FractionalHex.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-142">
@@ -867,33 +866,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-210">
-          <caret line="26" column="14" lean-forward="true" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
-          <folding>
-            <element signature="e#519#520#0" expanded="true" />
-            <element signature="e#559#560#0" expanded="true" />
-            <element signature="e#1111#1112#0" expanded="true" />
-            <element signature="e#1139#1140#0" expanded="true" />
-            <element signature="e#1170#1171#0" expanded="true" />
-            <element signature="e#1198#1199#0" expanded="true" />
-            <element signature="e#1233#1234#0" expanded="true" />
-            <element signature="e#1264#1265#0" expanded="true" />
-            <element signature="e#1305#1306#0" expanded="true" />
-            <element signature="e#1333#1334#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Controller/GameLogicController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Model/GameData.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-737">
@@ -904,15 +876,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Controller/GameLogicController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="23" column="51" lean-forward="true" selection-start-line="23" selection-start-column="51" selection-end-line="23" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Model/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="39" column="4" lean-forward="false" selection-start-line="39" selection-start-column="4" selection-end-line="39" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/AI/AIController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="436">
-          <caret line="278" column="20" lean-forward="true" selection-start-line="278" selection-start-column="20" selection-end-line="278" selection-end-column="20" />
+        <state relative-caret-position="323">
+          <caret line="270" column="9" lean-forward="true" selection-start-line="270" selection-start-column="9" selection-end-line="270" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1743#1749#0" expanded="true" />
-            <element signature="e#2816#2817#0" expanded="true" />
-            <element signature="e#2854#2855#0" expanded="true" />
+            <element signature="e#1612#1618#0" expanded="true" />
+            <element signature="e#2685#2686#0" expanded="true" />
+            <element signature="e#2723#2724#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Model/TranspositionTable/TTEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="38" column="27" lean-forward="false" selection-start-line="38" selection-start-column="27" selection-end-line="38" selection-end-column="27" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#537#538#0" expanded="true" />
+            <element signature="e#577#578#0" expanded="true" />
+            <element signature="e#1099#1100#0" expanded="true" />
+            <element signature="e#1118#1119#0" expanded="true" />
+            <element signature="e#1148#1149#0" expanded="true" />
+            <element signature="e#1176#1177#0" expanded="true" />
+            <element signature="e#1207#1208#0" expanded="true" />
+            <element signature="e#1235#1236#0" expanded="true" />
+            <element signature="e#1270#1271#0" expanded="true" />
+            <element signature="e#1301#1302#0" expanded="true" />
+            <element signature="e#1342#1343#0" expanded="true" />
+            <element signature="e#1370#1371#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -37,5 +37,5 @@ public class Constants {
         add(new Hexagon(0, 1, -1));
     }};
 
-    //public enum FLAG {EXACT, LOWERBOUND, UPPERBOUND}
+    public enum FLAG {EXACT, LOWERBOUND, UPPERBOUND}
 }
