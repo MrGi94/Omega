@@ -36,7 +36,6 @@ public class GameData implements java.io.Serializable {
     private HashMap<Hexagon, UnionFindTile> hex_map;
     private HashMap<Byte, Hexagon> hex_map_by_id;
     private UnionFindTile[] union_find_tile_array;
-    private HashMap<Byte, UnionFindTile> union_find_map;
     private HashMap<Byte, UnionFindTile> union_find_map_by_placement;
     private LinkedHashSet<Byte> cluster_parent_id_list;
     private Stack<Hexagon> hex_stack;

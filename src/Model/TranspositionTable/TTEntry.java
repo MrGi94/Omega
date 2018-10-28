@@ -2,9 +2,7 @@ package Model.TranspositionTable;
 
 import Model.UnionFindTile;
 
-import java.util.Comparator;
-
-public class TTEntry implements Comparator<TTEntry>, Comparable<TTEntry> {
+public class TTEntry implements Comparable<TTEntry> {
 
     //    private Constants.FLAG flag;
     private byte depth;
@@ -24,10 +22,13 @@ public class TTEntry implements Comparator<TTEntry>, Comparable<TTEntry> {
     }
 
     @Override
-    public int compare(TTEntry o1, TTEntry o2) {
-        return o1.value - o2.value;
+    public int compareTo(TTEntry o) {
+        int result = 0;
+        for (byte i = 0; i < this.board.length; ++i) {
+            result = this.board[i].compareTo(o.board[i]);
+        }
+        return result;
     }
-
 //
 //    public TTEntry(Constants.FLAG flag, byte depth, short value, short bestMove){
 //        this.flag = flag;
@@ -54,14 +55,5 @@ public class TTEntry implements Comparator<TTEntry>, Comparable<TTEntry> {
 
     public UnionFindTile[] getBoard() {
         return board;
-    }
-
-    @Override
-    public int compareTo(TTEntry o) {
-        int result = 0;
-        for (byte i = 0; i < this.board.length; ++i) {
-            result = this.board[i].compareTo(o.board[i]);
-        }
-        return result;
     }
 }

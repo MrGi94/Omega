@@ -3,6 +3,7 @@ package AI;
 import Controller.MapController;
 import Model.GameData;
 import Model.Hexagon;
+import Model.TranspositionTable.SortTTEntry;
 import Model.TranspositionTable.TTEntry;
 import Model.UnionFindTile;
 
@@ -10,7 +11,6 @@ import java.util.*;
 
 public class AIController {
     private ArrayList lastMoves;
-    private byte[] bestMoves;
     private LinkedHashSet<Byte> cluster_parent_id;
     private short free_tiles_left;
     private long starting_time;
@@ -33,7 +33,6 @@ public class AIController {
     public AIController(LinkedHashSet<Byte> cluster_parent_id, short free_tiles_left) {
         this.cluster_parent_id = copyClusterParent(cluster_parent_id);
         this.free_tiles_left = free_tiles_left;
-        this.bestMoves = new byte[2];
         this.processing_time_per_turn = GameData.PROCESSING_TIME / ((GameData.HEX_MAP.size()) / 4);
         this.starting_time = System.currentTimeMillis();
         this.lastMoves = new ArrayList();
@@ -41,6 +40,8 @@ public class AIController {
         this.lastMoves.add(0);
         this.history = new ArrayList<>();
     }
+
+    // https://github.com/avianey/minimax4j/blob/master/minimax4j/src/main/java/fr/avianey/minimax4j/impl/ParallelNegamax.java
 
     private LinkedHashSet<Byte> copyClusterParent(LinkedHashSet<Byte> cluster_parent_id) {
         LinkedHashSet<Byte> set = new LinkedHashSet<Byte>();
@@ -75,25 +76,6 @@ public class AIController {
 
         }
         return tiles;
-    }
-
-    /* returns the score in respect to the AI's color */
-    private short evaluate(UnionFindTile[] position_array) {
-        Iterator it = cluster_parent_id.iterator();
-        short[] score = {1, 1};
-        // score[0] white score | score[1] black score
-        while (it.hasNext()) {
-            byte tile_id = (byte) it.next();
-            if (position_array[tile_id].getColor() == 1)
-                score[0] = (short) (score[0] * position_array[tile_id].getSize());
-            else
-                score[1] = (short) (score[1] * position_array[tile_id].getSize());
-        }
-        // if human is first we play black and therefore want to keep positive difference
-        if (GameData.HUMAN_PLAYER_FIRST)
-            return (short) (score[1] - score[0]);
-        else
-            return (short) (score[0] - score[1]);
     }
 
     private long numbSuccessorsPrime() {
@@ -143,13 +125,14 @@ public class AIController {
         return move_array;
     }
 
-    private TTEntry sortHistoryReturnBestEntry() {
+    private TTEntry getBestHistoryEntry() {
         if (!history.isEmpty()) {
             // sort move history, pick best score and continue from there
-            Collections.sort(history);
+            Collections.sort(history, new SortTTEntry());
             return history.get(0);
         }
-        return new TTEntry(bestMoves);
+        byte[] random_moves = {playRandomMove(), playRandomMove()};
+        return new TTEntry(random_moves);
     }
 
     public byte[] OmegaPrime(int depth_limit) {
@@ -159,23 +142,23 @@ public class AIController {
 
         for (byte d = 2; d <= depth_limit * 2; d = (byte) (d + 2)) {
             try {
-                if (!history.isEmpty()) {
-                    TTEntry entry = sortHistoryReturnBestEntry();
-                    free_tiles_left = (short) getFreeTiles(entry.getBoard(), true).size();
-                    NegaMax(entry.getBoard(), entry.getDepth(), Short.MIN_VALUE, Short.MAX_VALUE);
-                } else {
-                    NegaMax(GameData.UNION_FIND_TILE_ARRAY, d, Short.MIN_VALUE, Short.MAX_VALUE);
-                    System.out.println("History size is: " + history.size());
-                    System.out.println("Black counter is: " + counterBlack);
-                    System.out.println("White counter is: " + counterWhite);
-                    System.out.println("Black bad is " + counterBlackBad + " White bad is " + counterWhiteBad);
-                    System.out.println("Black breaking " + breakBlack + " White breaking " + breakWhite);
-                }
+//                if (!history.isEmpty()) {
+//                    TTEntry entry = getBestHistoryEntry();
+//                    free_tiles_left = (short) getFreeTiles(entry.getBoard(), true).size();
+//                    NegaMax(entry.getBoard(), entry.getDepth(), Short.MIN_VALUE, Short.MAX_VALUE);
+//                } else {
+                NegaMax(GameData.UNION_FIND_TILE_ARRAY, d, Short.MIN_VALUE, Short.MAX_VALUE);
+                System.out.println("History size is: " + history.size());
+                System.out.println("Black counter is: " + counterBlack);
+                System.out.println("White counter is: " + counterWhite);
+                System.out.println("Black bad is " + counterBlackBad + " White bad is " + counterWhiteBad);
+                System.out.println("Black breaking " + breakBlack + " White breaking " + breakWhite);
+//                }
             } catch (TimeUpException e) {
-                return sortHistoryReturnBestEntry().getBestMove();
+                return getBestHistoryEntry().getBestMove();
             }
         }
-        return sortHistoryReturnBestEntry().getBestMove();
+        return getBestHistoryEntry().getBestMove();
     }
 
     private UnionFindTile[] successorPrime(UnionFindTile[] position_array, short child, boolean firstPiece) {
@@ -183,9 +166,9 @@ public class AIController {
         Vector moves_list = getFreeTiles(board, true);
         byte move = (byte) moves_list.get(child);
         if ((GameData.HUMAN_PLAYER_FIRST && firstPiece) || (!GameData.HUMAN_PLAYER_FIRST && !firstPiece))
-            board[move].setColor((byte) 2);
-        else
             board[move].setColor((byte) 1);
+        else
+            board[move].setColor((byte) 2);
         lastMoves.add(move);
         byte placement_id = (byte) (GameData.HEX_MAP.size() - free_tiles_left + 1);
         board[move].setPlacement_id(placement_id);
@@ -267,18 +250,18 @@ public class AIController {
 
     private void storeMove(UnionFindTile[] board, short bestValue) {
         byte index = (byte) (lastMoves.size() - 1);
-        bestMoves[1] = (byte) lastMoves.get(index);
-        bestMoves[0] = (byte) lastMoves.get(--index);
-        history.add(new TTEntry(index, bestValue, bestMoves, board));
+        byte[] moves = new byte[2];
+        moves[1] = (byte) lastMoves.get(index);
+        moves[0] = (byte) lastMoves.get(index - 1);
+        history.add(new TTEntry(index, bestValue, moves, board));
     }
 
     private short NegaMax(UnionFindTile[] position_array, byte depth, short alpha, short beta) throws TimeUpException {
         if (isTerminalNode() || depth == 0) {
             long i = System.currentTimeMillis() - starting_time;
-//            if ((System.currentTimeMillis() - starting_time) > processing_time_per_turn)
-//                throw new TimeUpException();
-            short s = evaluatePrime(position_array);
-            return s;
+            if ((System.currentTimeMillis() - starting_time) > processing_time_per_turn)
+                throw new TimeUpException();
+            return evaluatePrime(position_array);
         }
 
         // d1&d2 player maximizes, d3&d4 player minimizes, d5%d6 player maximizes, ...
@@ -295,7 +278,7 @@ public class AIController {
                     System.out.println("First Piece Maximizing: numbSuccessors = " + numbSuccessorsPrime());
                 counterBlack++;
                 // place first stone and maximize second turn as well
-                board = successorPrime(position_array, child, firstPiece);
+                board = successorPrime(position_array, child, true);
                 short value = NegaMax(board, d, alpha, beta);
                 position_array = unmakeMove(position_array);
                 if (value > score)
@@ -314,7 +297,7 @@ public class AIController {
                 if (counterWhite == 0)
                     System.out.println("Second Piece Maximizing: numbSuccessors = " + numbSuccessorsPrime());
                 counterWhite++;
-                board = successorPrime(position_array, child, firstPiece);
+                board = successorPrime(position_array, child, false);
                 short value = NegaMax(board, d, alpha, beta);
                 storeMove(board, value);
                 position_array = unmakeMove(position_array);
@@ -328,11 +311,11 @@ public class AIController {
                 }
             }
             return score;
-        } else if (firstPiece && !maximizeAI) {
+        } else if (firstPiece) {
             // place opponents first stone and minimize second turn as well
             for (short child = 0; child < numbSuccessorsPrime(); child++) {
                 counterBlackBad++;
-                board = successorPrime(position_array, child, firstPiece);
+                board = successorPrime(position_array, child, true);
                 short value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
                 position_array = unmakeMove(position_array);
                 if (value > score)
@@ -347,7 +330,7 @@ public class AIController {
             // place opponents second stone and maximize first AI turn
             for (short child = 0; child < numbSuccessorsPrime(); child++) {
                 counterWhiteBad++;
-                board = successorPrime(position_array, child, firstPiece);
+                board = successorPrime(position_array, child, false);
                 short value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
                 position_array = unmakeMove(position_array);
                 if (value > score)

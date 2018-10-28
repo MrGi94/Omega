@@ -68,7 +68,7 @@ public class BoardController extends MouseAdapter {
             return Color.black;
     }
 
-    public static byte determineNextMoveColor() {
+    private static byte determineNextMoveColor() {
         Byte b = 2;
         if ((GameData.HUMAN_PLAYER_FIRST && GameData.FIRST_PIECE) ||
                 (!GameData.HUMAN_PLAYER_FIRST && !GameData.FIRST_PIECE)) {
