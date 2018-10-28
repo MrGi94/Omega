@@ -3,28 +3,20 @@ package AI;
 import Controller.MapController;
 import Model.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 public class AIController {
     private ArrayList lastMoves;
-    private LinkedHashSet<Byte> cluster_parent_id;
     private short free_tiles_left;
     private long starting_time;
     private List<HistoryEntry> history;
     private int pruning;
+
     // divide total thinking time
     private long processing_time_per_turn;
 
-
-    public byte playRandomMove() {
-        Vector free_tiles = getFreeTiles(GameData.UNION_FIND_TILE_ARRAY, true);
-        return (byte) free_tiles.get((int) (Math.random() * free_tiles.size()));
-    }
-
-    public AIController(LinkedHashSet<Byte> cluster_parent_id, short free_tiles_left) {
-        this.cluster_parent_id = copyClusterParent(cluster_parent_id);
+    public AIController(short free_tiles_left) {
         this.free_tiles_left = free_tiles_left;
         this.processing_time_per_turn = GameData.PROCESSING_TIME / ((GameData.HEX_MAP.size()) / 4);
         this.starting_time = System.currentTimeMillis();
@@ -35,14 +27,10 @@ public class AIController {
         this.history = new ArrayList<>();
     }
 
-    // https://github.com/avianey/minimax4j/blob/master/minimax4j/src/main/java/fr/avianey/minimax4j/impl/ParallelNegamax.java
-
-    private LinkedHashSet<Byte> copyClusterParent(LinkedHashSet<Byte> cluster_parent_id) {
-        LinkedHashSet<Byte> set = new LinkedHashSet<>();
-        for (Object aCluster_parent_id : cluster_parent_id) {
-            set.add((byte) aCluster_parent_id);
-        }
-        return set;
+    // random AI
+    public byte playRandomMove() {
+        Vector free_tiles = getFreeTiles(GameData.UNION_FIND_TILE_ARRAY, true);
+        return (byte) free_tiles.get((int) (Math.random() * free_tiles.size()));
     }
 
     private boolean isTerminalNode() {
@@ -92,22 +80,18 @@ public class AIController {
                     break;
                 }
             }
-            if (!GameData.HUMAN_PLAYER_FIRST) {
-                byte tmp = move_array[0];
-                move_array[0] = move_array[1];
-                move_array[1] = tmp;
-            }
         }
         return move_array;
     }
 
-    private void generateClusterParentID(UnionFindTile[] board) {
-        cluster_parent_id = new LinkedHashSet<>();
-        for (byte idx = 0; idx < board.length; idx++) {
-            if (board[idx].getPlacement_id() == board[idx].getParent()) {
-                cluster_parent_id.add(board[idx].getParent());
+    private LinkedHashSet<Byte> generateClusterParentID(UnionFindTile[] board) {
+        LinkedHashSet cluster_parent_id = new LinkedHashSet<>();
+        for (UnionFindTile aBoard : board) {
+            if (aBoard.getPlacement_id() == aBoard.getParent()) {
+                cluster_parent_id.add(aBoard.getParent());
             }
         }
+        return cluster_parent_id;
     }
 
     private HistoryEntry getBestHistoryEntry() {
@@ -116,8 +100,11 @@ public class AIController {
             history.sort(new HistoryEntrySort());
             return history.get(0);
         }
-        byte[] random_moves = {playRandomMove(), playRandomMove()};
-        return new HistoryEntry(random_moves);
+        ArrayList<Byte> list = new ArrayList<>();
+        list.add((byte) 0);
+        list.add(playRandomMove());
+        list.add(playRandomMove());
+        return new HistoryEntry(list);
     }
 
     private List<HistoryEntry> getHistoryEntriesByValue(HistoryEntry entry) {
@@ -133,18 +120,18 @@ public class AIController {
     }
 
     public byte[] OmegaPrime(int depth_limit) {
+        // performs two open book moves if the board size is bigger than 3
         if (GameData.OPEN_BOOK_CENTER != null && !GameData.OPEN_BOOK_CENTER.isEmpty() && (GameData.HEX_MAP.size() - GameData.FREE_TILES_LEFT) / 4 < 2) {
             return getOpenBookMove();
         }
 
+        // performs iterative deepening and stops when time per turn runs out
         for (byte d = 2; d <= depth_limit * 2; d = (byte) (d + 2)) {
             try {
                 if (!history.isEmpty()) {
-                    // get entries with equal value
+                    // selects most promising entries with equal value and depth and explores them
                     List<HistoryEntry> entry_list = getHistoryEntriesByValue(getBestHistoryEntry());
-                    Iterator it = entry_list.iterator();
-                    while (it.hasNext()) {
-                        HistoryEntry entry = (HistoryEntry) it.next();
+                    for (HistoryEntry entry : entry_list) {
                         ArrayList moveHistory = entry.getMoveHistory();
                         boolean firstPiece = false;
                         free_tiles_left = (short) getFreeTiles(GameData.UNION_FIND_TILE_ARRAY, true).size();
@@ -160,6 +147,7 @@ public class AIController {
                     System.out.println("History size is: " + history.size());
                     System.out.println("Pruning: " + pruning);
                 } else {
+                    // performs normal NegaMax with no history
                     NegaMax(GameData.UNION_FIND_TILE_ARRAY, d, Short.MIN_VALUE, Short.MAX_VALUE);
                     System.out.println("---------- depth " + d + " -------------");
                     System.out.println("History size is: " + history.size());
@@ -173,6 +161,7 @@ public class AIController {
         return getBestHistoryEntry().getBestMoves();
     }
 
+    // places the specific move on the board and updates all relevant information
     private UnionFindTile[] placeMove(UnionFindTile[] position_array, byte move, boolean firstPiece) {
         UnionFindTile[] board = copyBoard(position_array);
         if ((GameData.HUMAN_PLAYER_FIRST && firstPiece) || (!GameData.HUMAN_PLAYER_FIRST && !firstPiece))
@@ -182,13 +171,13 @@ public class AIController {
         byte placement_id = (byte) (GameData.HEX_MAP.size() - free_tiles_left + 1);
         board[move].setPlacement_id(placement_id);
         board[move].setParent(placement_id);
-        cluster_parent_id.add(placement_id);
         free_tiles_left--;
         board = unionTile(board, move);
         return board;
     }
 
-    private UnionFindTile[] successorPrime(UnionFindTile[] position_array, byte child, boolean firstPiece) {
+    // selects the free tile matching with the child value and then performs that free move
+    private UnionFindTile[] applySuccessor(UnionFindTile[] position_array, byte child, boolean firstPiece) {
         Vector moves_list = getFreeTiles(position_array, true);
         byte move = (byte) moves_list.get(child);
         lastMoves.add(move);
@@ -224,7 +213,6 @@ public class AIController {
         largeParent.setSize((byte) (smallParent.getSize() + largeParent.getSize()));
         position_array[largeParent.getTileId()] = largeParent;
         position_array[smallParent.getTileId()] = smallParent;
-        cluster_parent_id.remove(smallParent.getPlacement_id());
         return position_array;
     }
 
@@ -254,11 +242,8 @@ public class AIController {
             if (tmp.getParent() == uft.getPlacement_id()) {
                 tmp.setParent(tmp.getPlacement_id());
                 position_array[tmp.getTileId()] = tmp;
-                cluster_parent_id.add(tmp.getPlacement_id());
             }
         }
-
-        cluster_parent_id.remove(uft.getPlacement_id());
         free_tiles_left++;
         return position_array;
     }
@@ -269,8 +254,8 @@ public class AIController {
         history.add(new HistoryEntry(depth, bestValue, moveHistory));
     }
 
-    private short evaluatePrime(UnionFindTile[] position_array) {
-        generateClusterParentID(position_array);
+    private short evaluate(UnionFindTile[] position_array) {
+        LinkedHashSet<Byte> cluster_parent_id = generateClusterParentID(position_array);
         Iterator it = cluster_parent_id.iterator();
         short[] score = {1, 1};
         // score[0] white score | score[1] black score
@@ -288,6 +273,7 @@ public class AIController {
     }
 
     private short NegaMax(UnionFindTile[] position_array, byte depth, short alpha, short beta) throws TimeoutException {
+        // checks for time out 
         if ((System.currentTimeMillis() - starting_time) > processing_time_per_turn)
             throw new TimeoutException();
 
@@ -307,7 +293,7 @@ public class AIController {
         // }
 
         if (isTerminalNode() || depth == 0) {
-            return evaluatePrime(position_array);
+            return evaluate(position_array);
         }
 
         // d1&d2 player maximizes, d3&d4 player minimizes, d5%d6 player maximizes, ...
@@ -320,7 +306,7 @@ public class AIController {
         byte d = --depth;
         for (byte child = 0; child < numbSuccessorsPrime(); child++) {
             // place first stone and maximize second turn as well
-            UnionFindTile[] board = successorPrime(position_array, child, firstPiece);
+            UnionFindTile[] board = applySuccessor(position_array, child, firstPiece);
             short value;
             if (maximizeAI)
                 value = NegaMax(board, d, alpha, beta);
@@ -328,7 +314,6 @@ public class AIController {
                 value = (short) -NegaMax(board, d, (short) -beta, (short) -alpha);
             if (!firstPiece)
                 storeMoveHistory(value);
-            //storeMove(board, value);
             position_array = unmakeMove(position_array);
             if (value > score) {
                 score = value;
@@ -350,15 +335,4 @@ public class AIController {
 
         return score;
     }
-
-//    I started with a version that gives each player a single placement of their color instead of the double placement move.
-//    This version was quite interesting in that it would always attempt to form groups of 3 pieces on the board.
-//    I didn't explicitly program that in, so in a sense, the program discovered that "3" is a discrete approximation to "e".
-//    Very interesting. You might also find it interesting to know that for the evaluation,
-//    I take the natural logarithm of the score (product of all groups) and scale that to a 3 digit integer after multiplying by 100.
-//    That seemed to work pretty well. Also, my group update is incremental.
-//    When a piece is placed, adjacent groups are detected, their size divided out from the total,
-//    and the new larger group formed by adding the new piece is multiplied back into the score.
-//    That way, a full board scan is not required.
-
 }

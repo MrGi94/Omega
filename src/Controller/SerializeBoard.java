@@ -4,6 +4,10 @@ import Model.Constants;
 
 import java.io.*;
 
+/*
+* used to save and load the game data
+* fully restores all game information
+* */
 public class SerializeBoard {
 
     public static boolean serializeBoard(Object o) {

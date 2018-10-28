@@ -1,5 +1,8 @@
 package Model;
 
+/*
+ * source: https://www.redblobgames.com/grids/hexagons/
+ * */
 public class Point {
     public Point(double x, double y) {
         this.x = x;

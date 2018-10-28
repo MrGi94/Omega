@@ -2,23 +2,17 @@ package Model;
 
 import java.util.ArrayList;
 
-public class HistoryEntry implements Comparable<HistoryEntry> {
+/*
+* stores all the necessary information computed by the negamax algorithm
+* */
+public class HistoryEntry {
 
-    //    private Constants.FLAG flag;
     private byte depth;
     private short value;
-    private byte[] bestMoves;
-    private UnionFindTile[] board;
     private ArrayList moveHistory;
-//    private byte bestMove;
-//    private long key;
-
-    public HistoryEntry(byte depth, short value, byte[] bestMoves, UnionFindTile[] board) {
-        this.depth = depth;
-        this.value = value;
-        this.bestMoves = bestMoves;
-        this.board = board;
-    }
+    // private Constants.FLAG flag;
+    // private byte bestMove;
+    // private long key;
 
     public HistoryEntry(byte depth, short value, ArrayList moveHistory) {
         this.depth = depth;
@@ -30,17 +24,8 @@ public class HistoryEntry implements Comparable<HistoryEntry> {
         return moveHistory;
     }
 
-    public HistoryEntry(byte[] bestMoves) {
-        this.bestMoves = bestMoves;
-    }
-
-    @Override
-    public int compareTo(HistoryEntry o) {
-        int result = 0;
-        for (byte i = 0; i < this.board.length; ++i) {
-            result = this.board[i].compareTo(o.board[i]);
-        }
-        return result;
+    public HistoryEntry(ArrayList moveHistory) {
+        this.moveHistory = moveHistory;
     }
 
 //    public HistoryEntry(Constants.FLAG flag, byte depth, short value, byte bestMove, UnionFindTile[] board) {
@@ -66,8 +51,4 @@ public class HistoryEntry implements Comparable<HistoryEntry> {
     public byte[] getBestMoves() {
         return new byte[]{(byte) this.moveHistory.get(1), (byte) this.moveHistory.get(2)};
     }
-
-//    public UnionFindTile[] getBoard() {
-//        return board;
-//    }
 }

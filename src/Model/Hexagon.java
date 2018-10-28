@@ -1,5 +1,9 @@
 package Model;
 
+/*
+* contains the general structure of a hexagon tile
+* source: https://www.redblobgames.com/grids/hexagons/
+* */
 public class Hexagon implements java.io.Serializable {
     public final int q;
     public final int r;

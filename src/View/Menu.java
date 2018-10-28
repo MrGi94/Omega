@@ -6,6 +6,9 @@ import Model.Constants;
 
 import javax.swing.*;
 
+/**
+ * Contains the menu view and here all the submenus are added
+ */
 public class Menu extends JFrame {
 
     public static Board board;
@@ -60,6 +63,4 @@ public class Menu extends JFrame {
         menuBar.add(menu);
         return menuBar;
     }
-
-    // nice GUI https://stackoverflow.com/questions/20734438/algorithm-to-generate-a-hexagonal-grid-with-coordinate-system
 }

@@ -2,6 +2,9 @@ package Model;
 
 import java.util.Comparator;
 
+/*
+* sorts history elements by depth and value
+* */
 public class HistoryEntrySort implements Comparator<HistoryEntry> {
 
     @Override

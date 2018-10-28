@@ -2,6 +2,10 @@ package Model;
 
 import java.util.ArrayList;
 
+/*
+* performs the computation to transform pixel into internally represented tiles and vice versa
+* source: https://www.redblobgames.com/grids/hexagons/
+* */
 public class Layout {
 
     private static Point hexToPixel(Hexagon h) {

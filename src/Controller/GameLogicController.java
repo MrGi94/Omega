@@ -7,23 +7,30 @@ import View.InfoBox;
 
 import java.util.Iterator;
 
+/*
+ * checks if new turn can be started, publishes the score and handles the AI controller
+ * */
 public class GameLogicController {
 
+    // assuming it is a two player game where each player places two stones
     private static boolean newTurnPossible() {
         return (GameData.HEX_MAP.size() - GameData.HEX_MAP.size() / 4 * 4) != GameData.FREE_TILES_LEFT;
     }
 
+    // starts a game between random AI and negamax AI
     public static void testAIPlayer() {
         while (newTurnPossible()) {
             if (!GameData.HUMAN_PLAYER_TURN) {
-                AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
+                // negamax AI
+                AIController ai = new AIController(GameData.FREE_TILES_LEFT);
                 byte[] move_array = ai.OmegaPrime(3);
                 Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
                 BoardController.placeOnFreeTile(h);
                 h = GameData.HEX_MAP_BY_ID.get(move_array[1]);
                 BoardController.placeOnFreeTile(h);
             } else {
-                AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
+                // random AI
+                AIController ai = new AIController(GameData.FREE_TILES_LEFT);
                 byte move = ai.playRandomMove();
                 Hexagon h = GameData.HEX_MAP_BY_ID.get(move);
                 BoardController.placeOnFreeTile(h);
@@ -35,11 +42,12 @@ public class GameLogicController {
         InfoBox.infoBox(generateScoreMessage(), Constants.INFO_BOX_GAME_END_TITLE);
     }
 
+    // for playing human vs negamax AI
     public static void newTurn() {
         if (!newTurnPossible())
             InfoBox.infoBox(generateScoreMessage(), Constants.INFO_BOX_GAME_END_TITLE);
         else if (!GameData.HUMAN_PLAYER_TURN) {
-            AIController ai = new AIController(GameData.CLUSTER_PARENT_ID_LIST, GameData.FREE_TILES_LEFT);
+            AIController ai = new AIController(GameData.FREE_TILES_LEFT);
             byte[] move_array = ai.OmegaPrime(5);
             Hexagon h = GameData.HEX_MAP_BY_ID.get(move_array[0]);
             BoardController.placeOnFreeTile(h);

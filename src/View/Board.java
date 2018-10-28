@@ -3,6 +3,9 @@ package View;
 import javax.swing.*;
 import java.awt.*;
 
+/*
+ * Draws the tile on the board
+ * */
 public class Board extends JComponent {
 
     public void drawPolygon(Graphics g, int[] xPoly, int[] yPoly, Color c) {
@@ -16,7 +19,7 @@ public class Board extends JComponent {
         g2.fillPolygon(p);
     }
 
-    public void paint(Graphics g){
+    public void paint(Graphics g) {
         super.paint(g);
     }
 }

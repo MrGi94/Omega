@@ -1,5 +1,9 @@
 package Model;
 
+/*
+* stores the orientation of the hexagon tile
+* source: https://www.redblobgames.com/grids/hexagons/
+* */
 public class Orientation {
     Orientation(double f0, double f1, double f2, double f3, double b0, double b1, double b2, double b3, double start_angle) {
         this.f0 = f0;

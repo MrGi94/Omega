@@ -1,5 +1,9 @@
 package Model;
 
+/*
+* union find is used to connect groups of same colored tiles
+* this speeds up the evaluation of the final score
+* */
 public class UnionFindTile implements java.io.Serializable, Comparable<UnionFindTile> {
 
     private byte parent;
@@ -10,8 +14,8 @@ public class UnionFindTile implements java.io.Serializable, Comparable<UnionFind
     private byte placement_id;
 
     /* transposition table entries */
-//    private long white_hash_value;
-//    private long black_hash_value;
+    // private long white_hash_value;
+    // private long black_hash_value;
 
     public UnionFindTile(byte tile_id) {
         this.size = 1;

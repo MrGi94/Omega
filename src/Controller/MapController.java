@@ -4,6 +4,9 @@ import Model.*;
 
 import java.util.*;
 
+/*
+ * controls the behaviour of the map representation
+ * */
 public class MapController {
 
     public static void generateHexMap(int map_radius) {
@@ -38,6 +41,7 @@ public class MapController {
         GameData.FREE_TILES_LEFT = (byte) GameData.HEX_MAP.size();
     }
 
+    // assigns a color to the particular hexagon
     public static void putHexMapValue(Hexagon h, Byte color) {
         if (GameData.HEX_MAP.containsKey(h)) {
             UnionFindTile uft = GameData.HEX_MAP.get(h);
@@ -52,6 +56,7 @@ public class MapController {
         }
     }
 
+    // retrieves the neighbours of the particular hexagon with matching color
     private static ArrayList<Hexagon> getNeighborsByColor(Hexagon hex, Byte color) {
         ArrayList<Hexagon> valid_neighbors = getValidNeighbors(hex);
         ArrayList<Hexagon> valid_color_neighbors = new ArrayList<>();
@@ -63,6 +68,7 @@ public class MapController {
         return valid_color_neighbors;
     }
 
+    // retrieves all neighbours of the particular hexagon which are withing the map borders
     public static ArrayList<Hexagon> getValidNeighbors(Hexagon hex) {
         ArrayList<Hexagon> valid_neighbors = new ArrayList<>();
         for (Hexagon hex_direction : Constants.HEXAGON_DIRECTIONS) {
@@ -74,6 +80,7 @@ public class MapController {
         return valid_neighbors;
     }
 
+    // check if a certain hexagon is within the map boundaries
     private static boolean withinBoundary(Hexagon h) {
         return Math.abs(h.q) < GameData.BOARD_SIZE &&
                 Math.abs(h.r) < GameData.BOARD_SIZE &&
@@ -81,7 +88,7 @@ public class MapController {
     }
 
     public static Byte getHexMapColor(Hexagon h) {
-        if (h == null)
+        if (h == null || GameData.HEX_MAP == null)
             return null;
         return GameData.HEX_MAP.get(h).getColor();
     }
@@ -98,6 +105,7 @@ public class MapController {
 
     /* Union Find Map Control */
 
+    // connects same colored, valid, neighboring tiles
     private static void connectNeighbors(Hexagon h, byte color) {
         ArrayList<Hexagon> neighbor_list = getNeighborsByColor(h, color);
         for (Hexagon neighbor : neighbor_list) {
@@ -143,6 +151,8 @@ public class MapController {
         GameData.CLUSTER_PARENT_ID_LIST.remove(smallParent.getPlacement_id());
     }
 
+    // reverts a union by removing the particular tile and setting the same colored neighbours parent id to their
+    // original placement number
     public static void disconnectTile(Hexagon h) {
         UnionFindTile uft = GameData.HEX_MAP.get(h);
         GameData.CLUSTER_PARENT_ID_LIST.remove(uft.getPlacement_id());

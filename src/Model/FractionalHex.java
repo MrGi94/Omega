@@ -1,5 +1,9 @@
 package Model;
 
+/**
+ * used to translate pixel values into board tiles
+ * source: https://www.redblobgames.com/grids/hexagons/
+ */
 public class FractionalHex {
 
     private final double q;

@@ -12,6 +12,9 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Map;
 
+/*
+* established the link between the map controller, the menu controller and the game logic controller
+* */
 public class BoardController extends MouseAdapter {
 
     private static void drawHexTile(Hexagon h, Byte b) {
@@ -77,6 +80,7 @@ public class BoardController extends MouseAdapter {
         return b;
     }
 
+    // reverts all relevant values which were changing in the last turn
     public static void revertLastMovement() {
         if (!GameData.HEX_STACK.isEmpty()) {
             Hexagon h = GameData.HEX_STACK.pop();

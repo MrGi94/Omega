@@ -10,22 +10,28 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/*
+* handles the user input via the menu items and calls the requested functions
+* */
 public class MenuController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case Constants.MENU_ITEM_SECOND:
+                // human player moves second
                 GameData.HUMAN_PLAYER_FIRST = false;
                 GameData.HUMAN_PLAYER_TURN = false;
                 break;
             case Constants.MENU_ITEM_FIRST:
+                // human player moves first
                 GameData.HUMAN_PLAYER_FIRST = true;
                 GameData.HUMAN_PLAYER_TURN = true;
                 break;
             case Constants.MENU_ITEM_EXIT:
                 System.exit(0);
             case Constants.MENU_ITEM_TEST_AI:
+                // starts a game between random AI and negamax AI
                 GameLogicController.testAIPlayer();
                 break;
             case Constants.MENU_ITEM_NEW_GAME:
